@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
+// J'ajoute un commentaire
+
 public class Polyomino {
 	public boolean[][] tuiles;
 	
@@ -15,12 +17,12 @@ public class Polyomino {
 	
 	public Polyomino(String s) {
 		//Ex : [(0,0), (0,4), (1,0), (1,1), (1,2), (1,3), (1,4), (2,0), (2,4)]
-		//Parsing de la chaîne en LinkedList
+		//Parsing de la chaï¿½ne en LinkedList
 		LinkedList<Integer[]> tuilesList = new LinkedList<Integer[]>();
 		
-		int k=1; //Indice courant dans la chaîne : on commence à la première parenthèse
+		int k=1; //Indice courant dans la chaï¿½ne : on commence ï¿½ la premiï¿½re parenthï¿½se
 		while(k<s.length()-1) {
-			//On commence chaque boucle à un début de parenthèses
+			//On commence chaque boucle ï¿½ un dï¿½but de parenthï¿½ses
 			k++;
 			int x=0, y=0;
 			while(s.charAt(k) != ',') {
@@ -34,7 +36,7 @@ public class Polyomino {
 			}
 			Integer[] tuile = {x,y};
 			tuilesList.add(tuile);
-			//On regarde si on est arrivés à la fin
+			//On regarde si on est arrivï¿½s ï¿½ la fin
 			k++;
 			if(s.charAt(k) == ',') k+=2;
 			else break;
@@ -70,7 +72,7 @@ public class Polyomino {
 	}
 	
 	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmax, int ymax) {
-		// Ajoute les Edge et les carrés de la tuile dans l'image img
+		// Ajoute les Edge et les carrï¿½s de la tuile dans l'image img
 		for(int i=0; i<tuiles.length; i++) {
 			for(int j=0; j<tuiles[i].length; j++) {
 				if(tuiles[i][j]) {
@@ -119,7 +121,7 @@ public class Polyomino {
 	}
 	
 	public static void creerFenetre(Polyomino[] polyominoes, int tailleTuiles, int width) {
-		// On détermine la taille de l'image
+		// On dï¿½termine la taille de l'image
 		Color[] colors = {Color.red, Color.yellow, Color.green, Color.blue, Color.gray, Color.cyan, Color.magenta, Color.orange, Color.lightGray};
 		int xmax = 0, ymax = 0;
 		for(Polyomino p : polyominoes) {
