@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
-// J'ajoute un commentaire
+// J'ajoute un commentaire nouveau
 
 public class Polyomino {
 	public boolean[][] tuiles;
