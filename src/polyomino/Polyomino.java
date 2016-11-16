@@ -6,49 +6,15 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
-class Point {
-	public int x, y;
-
-	public Point(int x, int y) {
-		this.x = x;
-		this.y = y;
-	}
-
-	public int getx() {
-		return this.x;
-	}
-
-	public int gety() {
-		return this.y;
-	}
-
-	public boolean equals(Point P) {
-		return (P.x == this.x && P.y == this.y);
-	}
-
-	public String toString() {
-		return "(" + this.x + "," + this.y + ")";
-	}
-
-	public LinkedList<Point> voisins() {
-		LinkedList<Point> vois = new LinkedList<Point>();
-		vois.add(new Point(this.x + 1, this.y));
-		vois.add(new Point(this.x - 1, this.y));
-		vois.add(new Point(this.x, this.y + 1));
-		vois.add(new Point(this.x, this.y - 1));
-		return vois;
-	}
-}
-
 public class Polyomino {
-	public boolean[][] tuiles; // reprÃ©sentation sous forme d'un tableau de
-								// boolÃ©ens
-	public LinkedList<Point> cases; // reprÃ©sentation sous forme de liste de
+	public boolean[][] tuiles; // représentation sous forme d'un tableau de
+								// booléens
+	public LinkedList<Point> cases; // représentation sous forme de liste de
 									// cases
 	public int n; // taille du polymino
 	public int largeur, hauteur; // taille du plus petit rectangle le contenant
 
-	// crÃ©ateurs
+	// constructeurs
 
 	public Polyomino(boolean[][] tuiles) {
 		this.tuiles = tuiles;
@@ -70,13 +36,13 @@ public class Polyomino {
 
 	public Polyomino(String s) {
 		// Ex : [(0,0), (0,4), (1,0), (1,1), (1,2), (1,3), (1,4), (2,0), (2,4)]
-		// Parsing de la chaï¿½ne en LinkedList
+		// Parsing de la chaîne en LinkedList
 		LinkedList<Integer[]> tuilesList = new LinkedList<Integer[]>();
 
-		int k = 1; // Indice courant dans la chaï¿½ne : on commence ï¿½ la premiï¿½re
-					// parenthï¿½se
+		int k = 1; // Indice courant dans la chaîne : on commence à la première
+					// parenthèse
 		while (k < s.length() - 1) {
-			// On commence chaque boucle ï¿½ un dï¿½but de parenthï¿½ses
+			// On commence chaque boucle à un début de parenthèses
 			k++;
 			int x = 0, y = 0;
 			while (s.charAt(k) != ',') {
@@ -90,7 +56,7 @@ public class Polyomino {
 			}
 			Integer[] tuile = { x, y };
 			tuilesList.add(tuile);
-			// On regarde si on est arrivï¿½s ï¿½ la fin
+			// On regarde si on est arrivés à la fin
 			k++;
 			if (s.charAt(k) == ',')
 				k += 2;
@@ -166,7 +132,7 @@ public class Polyomino {
 
 	public static boolean[][] toTuiles(LinkedList<Point> cases) {
 		// convertit les cases en tuiles, en supposant que les cases ont pour
-		// coin infÃ©rieur gauche 0
+		// coin inférieur gauche 0
 		int[] form = format(cases);
 		int largeur = form[0];
 		int hauteur = form[1];
@@ -193,13 +159,13 @@ public class Polyomino {
 	}
 
 	public Polyomino ajouterCase(Point p) {
-		// renvoie le polyomino rÃ©sultant de l'ajout de la case p Ã  this
+		// renvoie le polyomino résultant de l'ajout de la case p à this
 		if (this.contientCase(p)) {
-			System.out.println("Ce polyomino contient dÃ©jÃ  la case " + p);
+			System.out.println("Ce polyomino contient déjà  la case " + p);
 			return this;
 		} else {
 			int a = 0;
-			int b = 0; // rÃ©Ã©quilibrage si on passe en coordonnÃ©es nÃ©gatives
+			int b = 0; // rééquilibrage si on passe en coordonnées négatives
 						// (jamais de plus de 1 puisqu'on travaille de proche en
 						// proche)
 			if (p.x < 0) {
@@ -217,7 +183,9 @@ public class Polyomino {
 		}
 
 	}
-
+	
+	// retourne la liste des polyominos de taille n+1 obtenus en ajoutant une case sur chaque côté de chaque case
+	
 	public LinkedList<Polyomino> ajouterVoisins() {
 		LinkedList<Polyomino> nouveauxPolyo = new LinkedList<Polyomino>();
 		for (Point c : this.cases) {
@@ -230,7 +198,7 @@ public class Polyomino {
 		return nouveauxPolyo;
 	}
 
-	// gÃ©nÃ©ration de tous les polyominos d'ordre n
+	// génération de tous les polyominos d'ordre n
 
 	public static LinkedList<Polyomino> generer(int n) {
 		if (n == 1) {
@@ -242,17 +210,27 @@ public class Polyomino {
 			LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
 			for (Polyomino P : listePrecedente) {
 				for (Polyomino P2 : P.ajouterVoisins()) {
-					liste.add(P2);
+					//On vérifie que P2 n'est pas déjà dans liste
+					if (!P2.estDans(liste)) liste.add(P2);
 				}
 			}
 			return liste;
 		}
 	}
+	
+	// Vérifie si le polyomino se trouve déjà dans une liste (sans translation, rotation ou symétries)
+	
+	public boolean estDans(LinkedList<Polyomino> liste) {
+		for (Polyomino P : liste) {
+			if(equals(P)) return true;
+		}
+		return false;
+	}
 
 	// affichage graphique
 
 	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmax, int ymax) {
-		// Ajoute les Edge et les carrï¿½s de la tuile dans l'image img
+		// Ajoute les Edge et les carrés de la tuile dans l'image img
 		for (int i = 0; i < tuiles.length; i++) {
 			for (int j = 0; j < tuiles[i].length; j++) {
 				if (tuiles[i][j]) {
@@ -286,10 +264,6 @@ public class Polyomino {
 		}
 	}
 
-	public Polyomino translate(int dx, int dy) {
-
-		return null;
-	}
 
 	public void afficheConsole() {
 		for (boolean[] bTab : tuiles) {
@@ -300,6 +274,7 @@ public class Polyomino {
 		}
 	}
 
+	@Override
 	public String toString() {
 		String s = "[";
 		for (Point p : this.cases) {
@@ -308,9 +283,23 @@ public class Polyomino {
 		s += "]";
 		return s;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Polyomino) {
+			if(((Polyomino)o).largeur != largeur || ((Polyomino)o).hauteur != hauteur)
+				return false;
+			for (int i=0; i<largeur+1; i++) {
+				for (int j=0; j<hauteur+1; j++) {
+					if (((Polyomino)o).tuiles[i][j] != tuiles[i][j]) return false;
+				}
+			}
+			return true;
+		} else return false;
+	}
 
 	public static void creerFenetre(Polyomino[] polyominoes, int tailleTuiles, int width) {
-		// On dï¿½termine la taille de l'image
+		// On détermine la taille de l'image
 		Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue, Color.gray, Color.cyan, Color.magenta,
 				Color.orange, Color.lightGray };
 		int xmax = 0, ymax = 0;
@@ -327,16 +316,5 @@ public class Polyomino {
 
 		@SuppressWarnings("unused")
 		Image2dViewer fenetre = new Image2dViewer(img);
-	}
-
-	public static void main(String[] args) {
-		String chemin_fichier = "/Users/Guillaume/Documents/Informatique/Java-Eclipse/polyominoes/polyminoesINF421.txt";
-		Polyomino[] tab = importer(chemin_fichier);
-		for (Polyomino P : tab) {
-			System.out.println(P);
-			// P.afficheConsole();
-		}
-		// Polyomino[] tab2 = { tab[1] };
-		// creerFenetre(tab2, 100, 2);
 	}
 }
