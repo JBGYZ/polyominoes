@@ -13,7 +13,7 @@ public class Polyomino {
 									// cases
 	public int n; // taille du polymino
 	public int largeur, hauteur; // taille du plus petit rectangle le contenant
-
+	
 	// constructeurs
 
 	public Polyomino(boolean[][] tuiles) {
@@ -298,6 +298,21 @@ public class Polyomino {
 		}
 		s += "]";
 		return s;
+	}
+	
+	public static void afficherTuiles(boolean[][] tuiles) {
+		String s = "";
+		for (int j = tuiles[0].length-1; j >=0; j--) {
+			for (int i = 0; i < tuiles.length; i++){
+				if (tuiles[i][j]) {
+					s += "1";
+				} else {
+					s += "0";
+				}
+			}
+			System.out.println(s);
+			s = "";
+		}
 	}
 	
 	// différentes fonctions d'égalité
