@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
+import java.io.File;
+import javax.imageio.ImageIO;
 
 public class Polyomino {
 	public boolean[][] tuiles; // repr�sentation sous forme d'un tableau de
@@ -13,7 +15,7 @@ public class Polyomino {
 									// cases
 	public int n; // taille du polymino
 	public int largeur, hauteur; // taille du plus petit rectangle le contenant
-	
+
 	// constructeurs
 
 	public Polyomino(boolean[][] tuiles) {
@@ -126,7 +128,7 @@ public class Polyomino {
 				hauteur = p.y;
 			}
 		}
-		int[] form = { largeur, hauteur };
+		int[] form = { largeur + 1, hauteur + 1 };
 		return form;
 	}
 
@@ -136,7 +138,7 @@ public class Polyomino {
 		int[] form = format(cases);
 		int largeur = form[0];
 		int hauteur = form[1];
-		boolean[][] tuiles = new boolean[largeur + 1][hauteur + 1];
+		boolean[][] tuiles = new boolean[largeur][hauteur];
 		for (int i = 0; i < largeur; i++) {
 			for (int j = 0; j < hauteur; j++) {
 				tuiles[i][j] = false;
@@ -152,7 +154,7 @@ public class Polyomino {
 	// ajout d'une case
 
 	public boolean contientCase(Point p) {
-		if (p.x < 0 || p.y < 0 || p.x > largeur || p.y > hauteur) {
+		if (p.x < 0 || p.y < 0 || p.x >= largeur || p.y >= hauteur) {
 			return false;
 		}
 		return this.tuiles[p.x][p.y];
@@ -183,9 +185,10 @@ public class Polyomino {
 		}
 
 	}
-	
-	// retourne la liste des polyominos de taille n+1 obtenus en ajoutant une case sur chaque c�t� de chaque case
-	
+
+	// retourne la liste des polyominos de taille n+1 obtenus en ajoutant une
+	// case sur chaque c�t� de chaque case
+
 	public LinkedList<Polyomino> ajouterVoisins() {
 		LinkedList<Polyomino> nouveauxPolyo = new LinkedList<Polyomino>();
 		for (Point c : this.cases) {
@@ -210,77 +213,80 @@ public class Polyomino {
 			LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
 			for (Polyomino P : listePrecedente) {
 				for (Polyomino P2 : P.ajouterVoisins()) {
-					//On v�rifie que P2 n'est pas d�j� dans liste
-					if (!P2.estDans(liste)) liste.add(P2);
+					// On v�rifie que P2 n'est pas d�j� dans liste
+					if (!P2.estDans(liste))
+						liste.add(P2);
 				}
 			}
 			return liste;
 		}
 	}
-	
+
 	// fonctions d'isométries
-	
-	public static boolean[][] rotation(boolean[][] tuiles, int n){
+
+	public static boolean[][] rotation(boolean[][] tuiles, int n) {
 		// fait tourner le tableau tuiles d'un angle +npi/2
 		int largeur, hauteur;
 		largeur = tuiles.length;
 		hauteur = tuiles[0].length;
-		if (n==0){
+		if (n == 0) {
 			return ((boolean[][]) tuiles.clone());
-		} else if (n==1){
+		} else if (n == 1) {
 			boolean[][] nouvellesTuiles = new boolean[hauteur][largeur];
-			for (int i = 0; i < hauteur; i++){
-				for (int j = 0; j < largeur; j++){
-					nouvellesTuiles[i][j] = tuiles[j][hauteur-1-i];
+			for (int i = 0; i < hauteur; i++) {
+				for (int j = 0; j < largeur; j++) {
+					nouvellesTuiles[i][j] = tuiles[j][hauteur - 1 - i];
 				}
 			}
 			return nouvellesTuiles;
-		} else if (n==2){
+		} else if (n == 2) {
 			boolean[][] nouvellesTuiles = new boolean[largeur][hauteur];
-			for (int i = 0; i < largeur; i++){
-				for (int j = 0; j < hauteur; j++){
-					nouvellesTuiles[i][j] = tuiles[largeur-1-i][hauteur-1-j];
+			for (int i = 0; i < largeur; i++) {
+				for (int j = 0; j < hauteur; j++) {
+					nouvellesTuiles[i][j] = tuiles[largeur - 1 - i][hauteur - 1 - j];
 				}
 			}
 			return nouvellesTuiles;
-		} else if (n==3){
+		} else if (n == 3) {
 			boolean[][] nouvellesTuiles = new boolean[hauteur][largeur];
-			for (int i = 0; i < hauteur; i++){
-				for (int j = 0; j < largeur; j++){
-					nouvellesTuiles[i][j] = tuiles[largeur-1-j][i];
+			for (int i = 0; i < hauteur; i++) {
+				for (int j = 0; j < largeur; j++) {
+					nouvellesTuiles[i][j] = tuiles[largeur - 1 - j][i];
 				}
 			}
 			return nouvellesTuiles;
-		} else{
+		} else {
 			System.out.println("Attention : n doit etre compris entre 0 et 3");
 			return null;
 		}
 	}
-	
-	public static boolean[][] symetrieX(boolean[][] tuiles){
+
+	public static boolean[][] symetrieX(boolean[][] tuiles) {
 		int largeur, hauteur;
 		largeur = tuiles.length;
 		hauteur = tuiles[0].length;
 		boolean[][] nouvellesTuiles = new boolean[largeur][hauteur];
-		for (int i = 0; i < largeur; i++){
-			for (int j = 0; j < hauteur; j++){
-				nouvellesTuiles[i][j] = tuiles[i][hauteur-1-j];
+		for (int i = 0; i < largeur; i++) {
+			for (int j = 0; j < hauteur; j++) {
+				nouvellesTuiles[i][j] = tuiles[i][hauteur - 1 - j];
 			}
 		}
 		return nouvellesTuiles;
 	}
-	
-	// V�rifie si le polyomino se trouve d�j� dans une liste (en prenant en compte toutes les isométries)
-	
+
+	// V�rifie si le polyomino se trouve d�j� dans une liste (en prenant en
+	// compte toutes les isométries)
+
 	public boolean estDans(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
-			// il suffit de modifier la ligne suivante pour prendre en compte ou non les rotations et les symétries
-			if(this.equals_isometries(P)) return true;
+			// il suffit de modifier la ligne suivante pour prendre en compte ou
+			// non les rotations et les symétries
+			if (this.equals_isometries(P))
+				return true;
 		}
 		return false;
 	}
 
-	
 	public void afficheConsole() {
 		for (boolean[] bTab : tuiles) {
 			for (boolean b : bTab) {
@@ -299,11 +305,11 @@ public class Polyomino {
 		s += "]";
 		return s;
 	}
-	
+
 	public static void afficherTuiles(boolean[][] tuiles) {
 		String s = "";
-		for (int j = tuiles[0].length-1; j >=0; j--) {
-			for (int i = 0; i < tuiles.length; i++){
+		for (int j = tuiles[0].length - 1; j >= 0; j--) {
+			for (int i = 0; i < tuiles.length; i++) {
 				if (tuiles[i][j]) {
 					s += "1";
 				} else {
@@ -314,100 +320,104 @@ public class Polyomino {
 			s = "";
 		}
 	}
-	
+
 	// différentes fonctions d'égalité
-	
+
 	// à translation près
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Polyomino) {
-			if(((Polyomino)o).largeur != largeur || ((Polyomino)o).hauteur != hauteur)
+			if (((Polyomino) o).largeur != largeur || ((Polyomino) o).hauteur != hauteur)
 				return false;
-			for (int i=0; i<largeur+1; i++) {
-				for (int j=0; j<hauteur+1; j++) {
-					if (((Polyomino)o).tuiles[i][j] != tuiles[i][j]) return false;
+			for (int i = 0; i < largeur; i++) {
+				for (int j = 0; j < hauteur; j++) {
+					if (((Polyomino) o).tuiles[i][j] != tuiles[i][j])
+						return false;
 				}
 			}
 			return true;
-		} else return false;
+		} else
+			return false;
 	}
-	
+
 	// à isométries directes près (rotations d'angle 0, pi/2, pi, 3pi/2)
-	public boolean equals_rotations(Polyomino P){
-		Polyomino R0 = new Polyomino(rotation(P.tuiles,0));
-		Polyomino R1 = new Polyomino(rotation(P.tuiles,1));
-		Polyomino R2 = new Polyomino(rotation(P.tuiles,2));
-		Polyomino R3 = new Polyomino(rotation(P.tuiles,3));
+	public boolean equals_rotations(Polyomino P) {
+		Polyomino R0 = new Polyomino(rotation(P.tuiles, 0));
+		Polyomino R1 = new Polyomino(rotation(P.tuiles, 1));
+		Polyomino R2 = new Polyomino(rotation(P.tuiles, 2));
+		Polyomino R3 = new Polyomino(rotation(P.tuiles, 3));
 		return (this.equals(R0) || this.equals(R1) || this.equals(R2) || this.equals(R3));
 	}
-	
-	// à isométries près (rotations d'angle 0, pi/2, pi, 3pi/2 avec ou sans symetrie / x)
-	public boolean equals_isometries(Polyomino P){
+
+	// à isométries près (rotations d'angle 0, pi/2, pi, 3pi/2 avec ou sans
+	// symetrie / x)
+	public boolean equals_isometries(Polyomino P) {
 		Polyomino S = new Polyomino(symetrieX(P.tuiles));
-		Polyomino S0 = new Polyomino(rotation(S.tuiles,0));
-		Polyomino S1 = new Polyomino(rotation(S.tuiles,1));
-		Polyomino S2 = new Polyomino(rotation(S.tuiles,2));
-		Polyomino S3 = new Polyomino(rotation(S.tuiles,3));
+		Polyomino S0 = new Polyomino(rotation(S.tuiles, 0));
+		Polyomino S1 = new Polyomino(rotation(S.tuiles, 1));
+		Polyomino S2 = new Polyomino(rotation(S.tuiles, 2));
+		Polyomino S3 = new Polyomino(rotation(S.tuiles, 3));
 		return (this.equals_rotations(P) || this.equals(S0) || this.equals(S1) || this.equals(S2) || this.equals(S3));
 	}
-		
-		
+
 	// affichage graphique
 
-	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmax, int ymax) {
-		// Ajoute les Edge et les carr�s de la tuile dans l'image img
+	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int xmax,
+			int ymax) {
+		// Ajoute les carrés du polyomino dans l'image img, plus précisément
+		// dans le cadre [xmin,xmax]*[ymin,ymax]
 		for (int i = 0; i < tuiles.length; i++) {
 			for (int j = 0; j < tuiles[i].length; j++) {
 				if (tuiles[i][j]) {
-					int[] xcoords = { i * tailleTuiles, i * tailleTuiles, (i + 1) * tailleTuiles,
-							(i + 1) * tailleTuiles },
-							ycoords = { (ymax - j) * tailleTuiles, (ymax - (j + 1)) * tailleTuiles,
-									(ymax - (j + 1)) * tailleTuiles, (ymax - j) * tailleTuiles };
+					int[] xcoords = { (xmin + i) * tailleTuiles, (xmin + i) * tailleTuiles,
+							(xmin + i + 1) * tailleTuiles, (xmin + i + 1) * tailleTuiles },
+							ycoords = { (ymin + ymax - j) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles,
+									(ymin + ymax - (j + 1)) * tailleTuiles, (ymin + ymax - j) * tailleTuiles };
+					/*System.out.println("" + xcoords[0] / tailleTuiles + " " + xcoords[1] / tailleTuiles + " "
+							+ xcoords[2] / tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " + ycoords[0] / tailleTuiles + " " + ycoords[1] / tailleTuiles + " "
+							+ ycoords[2] / tailleTuiles + " " + ycoords[3] / tailleTuiles);*/
 					img.addPolygon(xcoords, ycoords, color);
 					if (i == 0 || !tuiles[i - 1][j]) {
 						// System.out.println("a");
-						img.addEdge(i * tailleTuiles, (ymax - j) * tailleTuiles, i * tailleTuiles,
-								(ymax - (j + 1)) * tailleTuiles, width);
+						img.addEdge((xmin + i) * tailleTuiles, (ymin + ymax - j) * tailleTuiles,
+								(xmin + i) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles, width);
 					}
 					if (j == 0 || !tuiles[i][j - 1]) {
 						// System.out.println("b");
-						img.addEdge(i * tailleTuiles, (ymax - j) * tailleTuiles, (i + 1) * tailleTuiles,
-								(ymax - j) * tailleTuiles, width);
+						img.addEdge((xmin + i) * tailleTuiles, (ymin + ymax - j) * tailleTuiles,
+								(xmin + i + 1) * tailleTuiles, (ymin + ymax - j) * tailleTuiles, width);
 					}
 					if (i == tuiles.length - 1 || !tuiles[i + 1][j]) {
 						// System.out.println("c");
-						img.addEdge((i + 1) * tailleTuiles, (ymax - j) * tailleTuiles, (i + 1) * tailleTuiles,
-								(ymax - (j + 1)) * tailleTuiles, width);
+						img.addEdge((xmin + i + 1) * tailleTuiles, (ymin + ymax - j) * tailleTuiles,
+								(xmin + i + 1) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles, width);
 					}
 					if (j == tuiles[i].length - 1 || !tuiles[i][j + 1]) {
 						// System.out.println("d");
-						img.addEdge(i * tailleTuiles, (ymax - (j + 1)) * tailleTuiles, (i + 1) * tailleTuiles,
-								(ymax - (j + 1)) * tailleTuiles, width);
+						img.addEdge((xmin + i) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles,
+								((xmin + i) + 1) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles, width);
 					}
 				}
 			}
 		}
 	}
 
-
-
-	public static void creerFenetre(Polyomino[] polyominoes, int tailleTuiles, int width) {
-		// On d�termine la taille de l'image
+	public static void creerFenetre(Configuration config) {
 		Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue, Color.gray, Color.cyan, Color.magenta,
 				Color.orange, Color.lightGray };
-		int xmax = 0, ymax = 0;
-		for (Polyomino p : polyominoes) {
-			xmax = Math.max(xmax, p.tuiles.length);
-			ymax = Math.max(ymax, p.tuiles[0].length);
-		}
-		Image2d img = new Image2d(xmax * tailleTuiles, ymax * tailleTuiles);
-		int k = 0;
-		for (Polyomino p : polyominoes) {
-			p.addPolygonAndEdges(img, width, colors[k % colors.length], tailleTuiles, xmax, ymax);
-			k++;
+		Image2d img = new Image2d(config.xmax * config.tailleTuiles, config.ymax * config.tailleTuiles);
+		for (int i = 0; i < config.polyominoes.length; i++) {
+			Polyomino p = config.polyominoes[i];
+			int xmin = config.bottomLeft[i].x;
+			int ymin = config.bottomLeft[i].y;
+			int xmax = xmin + p.largeur;
+			int ymax = ymin + p.hauteur;
+			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin, xmax,
+					ymax);
 		}
 
 		@SuppressWarnings("unused")
 		Image2dViewer fenetre = new Image2dViewer(img);
+
 	}
 }
