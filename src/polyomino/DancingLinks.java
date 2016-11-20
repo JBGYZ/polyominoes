@@ -1,7 +1,5 @@
 package polyomino;
 
-import java.util.LinkedList;
-
 class Data {
 
 	public Data U, D, L, R;

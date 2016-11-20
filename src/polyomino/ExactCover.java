@@ -27,6 +27,7 @@ public class ExactCover {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	public static LinkedList<LinkedList<Integer[]>> exactCover(Integer[][] M, LinkedList<Integer> X,
 			LinkedList<Integer> C) {
 		if (X.isEmpty()) {

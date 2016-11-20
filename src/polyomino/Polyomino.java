@@ -5,8 +5,6 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
-import java.io.File;
-import javax.imageio.ImageIO;
 
 public class Polyomino {
 	public boolean[][] tuiles; // repr�sentation sous forme d'un tableau de
@@ -393,8 +391,7 @@ public class Polyomino {
 
 	// Affichage graphique
 
-	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int xmax,
-			int ymax) {
+	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int ymaxTot) {
 		// Ajoute les carrés du polyomino dans l'image img, plus précisément
 		// dans le cadre [xmin,xmax]*[ymin,ymax]
 		for (int i = 0; i < tuiles.length; i++) {
@@ -402,36 +399,32 @@ public class Polyomino {
 				if (tuiles[i][j]) {
 					int[] xcoords = { (xmin + i) * tailleTuiles, (xmin + i) * tailleTuiles,
 							(xmin + i + 1) * tailleTuiles, (xmin + i + 1) * tailleTuiles },
-							ycoords = { (ymin + ymax - j) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles,
-									(ymin + ymax - (j + 1)) * tailleTuiles, (ymin + ymax - j) * tailleTuiles };
-					/*
-					 * System.out.println("" + xcoords[0] / tailleTuiles + " " +
-					 * xcoords[1] / tailleTuiles + " " + xcoords[2] /
-					 * tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
-					 * ycoords[0] / tailleTuiles + " " + ycoords[1] /
-					 * tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
-					 * ycoords[3] / tailleTuiles);
-					 */
+							ycoords = { (ymaxTot - ymin - j) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
+									(ymaxTot - ymin - (j + 1)) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles };
+					
+					/*System.out.println("" + xcoords[0] / tailleTuiles + " " +
+					xcoords[1] / tailleTuiles + " " + xcoords[2] /
+					tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
+					ycoords[0] / tailleTuiles + " " + ycoords[1] /
+					tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
+					ycoords[3] / tailleTuiles);*/
+					
 					img.addPolygon(xcoords, ycoords, color);
 					if (i == 0 || !tuiles[i - 1][j]) {
-						// System.out.println("a");
-						img.addEdge((xmin + i) * tailleTuiles, (ymin + ymax - j) * tailleTuiles,
-								(xmin + i) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles, width);
+						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
+								(xmin + i) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
 					}
 					if (j == 0 || !tuiles[i][j - 1]) {
-						// System.out.println("b");
-						img.addEdge((xmin + i) * tailleTuiles, (ymin + ymax - j) * tailleTuiles,
-								(xmin + i + 1) * tailleTuiles, (ymin + ymax - j) * tailleTuiles, width);
+						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
+								(xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles, width);
 					}
 					if (i == tuiles.length - 1 || !tuiles[i + 1][j]) {
-						// System.out.println("c");
-						img.addEdge((xmin + i + 1) * tailleTuiles, (ymin + ymax - j) * tailleTuiles,
-								(xmin + i + 1) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles, width);
+						img.addEdge((xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
+								(xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
 					}
 					if (j == tuiles[i].length - 1 || !tuiles[i][j + 1]) {
-						// System.out.println("d");
-						img.addEdge((xmin + i) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles,
-								((xmin + i) + 1) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles, width);
+						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
+								((xmin + i) + 1) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
 					}
 				}
 			}
@@ -446,14 +439,13 @@ public class Polyomino {
 			Polyomino p = config.polyominoes[i];
 			int xmin = config.bottomLeft[i].x;
 			int ymin = config.bottomLeft[i].y;
-			int xmax = xmin + p.largeur;
-			int ymax = ymin + p.hauteur;
-			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin, xmax,
-					ymax);
+			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin, config.ymax);
 		}
-
-		@SuppressWarnings("unused")
+		
 		Image2dViewer fenetre = new Image2dViewer(img);
+		System.out.println(config.xmax+" "+config.ymax);
+		fenetre.setSize(config.tailleTuiles*config.xmax, config.tailleTuiles*config.ymax+50);
+		fenetre.setLocationRelativeTo(null);
 
 	}
 }

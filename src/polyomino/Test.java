@@ -28,12 +28,13 @@ public class Test {
 		// Test de la génération des polyominos
 		
 		PrintStream out = System.out;
-		int n = 5;
+		int n = 6;
 		LinkedList<Polyomino> liste2 = Polyomino.genererFixes(n);
 		LinkedList<Polyomino> liste = Polyomino.genererLibres(n);
 		System.out.println();
 		for (Polyomino P2 : liste){
-			//P2.afficheConsole();
+			P2.afficheConsole();
+			out.println();
 			//System.out.println(P2);
 			//System.out.println();
 			
@@ -50,16 +51,16 @@ public class Test {
 		
 		// Test de ExactCover
 		
-		Integer[][] M = { { 0, 0, 1, 0, 1, 1, 0 }, { 1, 0, 0, 1, 0, 0, 1 }, { 0, 1, 1, 0, 0, 1, 0 },
-				{ 1, 0, 0, 1, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 1, 0, 1 } };
+		//Integer[][] M = { { 0, 0, 1, 0, 1, 1, 0 }, { 1, 0, 0, 1, 0, 0, 1 }, { 0, 1, 1, 0, 0, 1, 0 },
+		//		{ 1, 0, 0, 1, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 1, 0, 1 } };
 		//ExactCover.afficherExactCover(M);
 		
-		Integer[][] M2 = ExactCover.subsets(7);
+		//Integer[][] M2 = ExactCover.subsets(7);
 		//ExactCover.afficherExactCover(M2);
 		
 		// Test de DancingLinks
 
-		DancingLinks D = new DancingLinks(M);
+		//DancingLinks D = new DancingLinks(M);
 		//System.out.println(D);
 	}
 
