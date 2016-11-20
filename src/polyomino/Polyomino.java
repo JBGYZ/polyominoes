@@ -201,27 +201,6 @@ public class Polyomino {
 		return nouveauxPolyo;
 	}
 
-	// g�n�ration de tous les polyominos d'ordre n
-
-	public static LinkedList<Polyomino> generer(int n) {
-		if (n == 1) {
-			LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
-			liste.add(new Polyomino("[(0,0)]"));
-			return liste;
-		} else {
-			LinkedList<Polyomino> listePrecedente = generer(n - 1);
-			LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
-			for (Polyomino P : listePrecedente) {
-				for (Polyomino P2 : P.ajouterVoisins()) {
-					// On v�rifie que P2 n'est pas d�j� dans liste
-					if (!P2.estDans(liste))
-						liste.add(P2);
-				}
-			}
-			return liste;
-		}
-	}
-
 	// fonctions d'isométries
 
 	public static boolean[][] rotation(boolean[][] tuiles, int n) {
@@ -274,27 +253,105 @@ public class Polyomino {
 		return nouvellesTuiles;
 	}
 
-	// V�rifie si le polyomino se trouve d�j� dans une liste (en prenant en
-	// compte toutes les isométries)
+	// Différentes fonctions d'égalité
 
+	// à translation près
+	@Override
+	public boolean equals(Object o) {
+		if (o instanceof Polyomino) {
+			if (((Polyomino) o).largeur != largeur || ((Polyomino) o).hauteur != hauteur)
+				return false;
+			for (int i = 0; i < largeur; i++) {
+				for (int j = 0; j < hauteur; j++) {
+					if (((Polyomino) o).tuiles[i][j] != tuiles[i][j])
+						return false;
+				}
+			}
+			return true;
+		} else
+			return false;
+	}
+
+	// à isométrie directe près (rotations d'angle 0, pi/2, pi, 3pi/2)
+	public boolean equalsRotations(Polyomino P) {
+		Polyomino R0 = new Polyomino(rotation(P.tuiles, 0));
+		Polyomino R1 = new Polyomino(rotation(P.tuiles, 1));
+		Polyomino R2 = new Polyomino(rotation(P.tuiles, 2));
+		Polyomino R3 = new Polyomino(rotation(P.tuiles, 3));
+		return (this.equals(R0) || this.equals(R1) || this.equals(R2) || this.equals(R3));
+	}
+
+	// à isométrie près (rotations d'angle 0, pi/2, pi, 3pi/2 avec ou sans
+	// symetrie / x)
+	public boolean equalsIsometries(Polyomino P) {
+		Polyomino S = new Polyomino(symetrieX(P.tuiles));
+		Polyomino S0 = new Polyomino(rotation(S.tuiles, 0));
+		Polyomino S1 = new Polyomino(rotation(S.tuiles, 1));
+		Polyomino S2 = new Polyomino(rotation(S.tuiles, 2));
+		Polyomino S3 = new Polyomino(rotation(S.tuiles, 3));
+		return (this.equalsRotations(P) || this.equals(S0) || this.equals(S1) || this.equals(S2) || this.equals(S3));
+	}
+
+	// V�rifie si le polyomino se trouve d�j� dans une liste (à translation
+	// près)
 	public boolean estDans(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
-			// il suffit de modifier la ligne suivante pour prendre en compte ou
-			// non les rotations et les symétries
-			if (this.equals_isometries(P))
+			if (this.equals(P))
 				return true;
 		}
 		return false;
 	}
 
-	public void afficheConsole() {
-		for (boolean[] bTab : tuiles) {
-			for (boolean b : bTab) {
-				System.out.print(b ? "O" : " ");
+	// V�rifie si le polyomino se trouve d�j� dans une liste (à isométrie près)
+	public boolean estDansIsometries(LinkedList<Polyomino> liste) {
+		for (Polyomino P : liste) {
+			if (this.equalsIsometries(P))
+				return true;
+		}
+		return false;
+	}
+
+	// G�n�ration de tous les polyominos d'ordre n
+
+	public static LinkedList<Polyomino> generer(int n, boolean isom) {
+		if (n == 1) {
+			LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
+			liste.add(new Polyomino("[(0,0)]"));
+			return liste;
+		} else {
+			LinkedList<Polyomino> listePrecedente = generer(n - 1, isom);
+			LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
+			for (Polyomino P : listePrecedente) {
+				for (Polyomino P2 : P.ajouterVoisins()) {
+					// On v�rifie que P2 n'est pas d�j� dans liste
+					boolean estDedans;
+					if (isom){ // on prend en compte les isométries
+						estDedans = P2.estDansIsometries(liste);
+					}
+					else{ // on ne prend en compte que les translations
+						estDedans = P2.estDans(liste);
+					}
+					if (!estDedans)
+						liste.add(P2);
+				}
 			}
-			System.out.println();
+			return liste;
 		}
 	}
+	
+	public static LinkedList<Polyomino> genererFixes(int n) {
+		LinkedList<Polyomino> liste = generer(n,false);
+		System.out.println("Il y a " + liste.size() + " polyominos fixes de taille " + n + ".");
+		return liste;
+	}
+	
+	public static LinkedList<Polyomino> genererLibres(int n) {
+		LinkedList<Polyomino> liste = generer(n,true);
+		System.out.println("Il y a " + liste.size() + " polyominos libres de taille " + n + ".");
+		return liste;
+	}
+
+	// Affichage console
 
 	@Override
 	public String toString() {
@@ -321,46 +378,20 @@ public class Polyomino {
 		}
 	}
 
-	// différentes fonctions d'égalité
+	public void afficheConsole() {
+		afficherTuiles(this.tuiles);
+	}
 
-	// à translation près
-	@Override
-	public boolean equals(Object o) {
-		if (o instanceof Polyomino) {
-			if (((Polyomino) o).largeur != largeur || ((Polyomino) o).hauteur != hauteur)
-				return false;
-			for (int i = 0; i < largeur; i++) {
-				for (int j = 0; j < hauteur; j++) {
-					if (((Polyomino) o).tuiles[i][j] != tuiles[i][j])
-						return false;
-				}
+	public void afficheConsole2() {
+		for (boolean[] bTab : tuiles) {
+			for (boolean b : bTab) {
+				System.out.print(b ? "O" : " ");
 			}
-			return true;
-		} else
-			return false;
+			System.out.println();
+		}
 	}
 
-	// à isométries directes près (rotations d'angle 0, pi/2, pi, 3pi/2)
-	public boolean equals_rotations(Polyomino P) {
-		Polyomino R0 = new Polyomino(rotation(P.tuiles, 0));
-		Polyomino R1 = new Polyomino(rotation(P.tuiles, 1));
-		Polyomino R2 = new Polyomino(rotation(P.tuiles, 2));
-		Polyomino R3 = new Polyomino(rotation(P.tuiles, 3));
-		return (this.equals(R0) || this.equals(R1) || this.equals(R2) || this.equals(R3));
-	}
-
-	// à isométries près (rotations d'angle 0, pi/2, pi, 3pi/2 avec ou sans
-	// symetrie / x)
-	public boolean equals_isometries(Polyomino P) {
-		Polyomino S = new Polyomino(symetrieX(P.tuiles));
-		Polyomino S0 = new Polyomino(rotation(S.tuiles, 0));
-		Polyomino S1 = new Polyomino(rotation(S.tuiles, 1));
-		Polyomino S2 = new Polyomino(rotation(S.tuiles, 2));
-		Polyomino S3 = new Polyomino(rotation(S.tuiles, 3));
-		return (this.equals_rotations(P) || this.equals(S0) || this.equals(S1) || this.equals(S2) || this.equals(S3));
-	}
-
-	// affichage graphique
+	// Affichage graphique
 
 	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int xmax,
 			int ymax) {
@@ -373,9 +404,14 @@ public class Polyomino {
 							(xmin + i + 1) * tailleTuiles, (xmin + i + 1) * tailleTuiles },
 							ycoords = { (ymin + ymax - j) * tailleTuiles, (ymin + ymax - (j + 1)) * tailleTuiles,
 									(ymin + ymax - (j + 1)) * tailleTuiles, (ymin + ymax - j) * tailleTuiles };
-					/*System.out.println("" + xcoords[0] / tailleTuiles + " " + xcoords[1] / tailleTuiles + " "
-							+ xcoords[2] / tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " + ycoords[0] / tailleTuiles + " " + ycoords[1] / tailleTuiles + " "
-							+ ycoords[2] / tailleTuiles + " " + ycoords[3] / tailleTuiles);*/
+					/*
+					 * System.out.println("" + xcoords[0] / tailleTuiles + " " +
+					 * xcoords[1] / tailleTuiles + " " + xcoords[2] /
+					 * tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
+					 * ycoords[0] / tailleTuiles + " " + ycoords[1] /
+					 * tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
+					 * ycoords[3] / tailleTuiles);
+					 */
 					img.addPolygon(xcoords, ycoords, color);
 					if (i == 0 || !tuiles[i - 1][j]) {
 						// System.out.println("a");

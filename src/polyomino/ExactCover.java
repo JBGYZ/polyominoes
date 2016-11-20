@@ -65,6 +65,7 @@ public class ExactCover {
 	public static void afficherExactCover(Integer[][] M){
 		System.out.println("On cherche les partitions de la matrice :");
 		afficherMatrice(M);
+		System.out.println();
 		int cardC = M.length;
 		int cardX = M[0].length;
 		LinkedList<Integer> X = new LinkedList<Integer>();
@@ -113,16 +114,6 @@ public class ExactCover {
 			}
 		}
 		return M;
-	}
-
-	public static void main(String[] args) {
-
-		Integer[][] M = { { 0, 0, 1, 0, 1, 1, 0 }, { 1, 0, 0, 1, 0, 0, 1 }, { 0, 1, 1, 0, 0, 1, 0 },
-				{ 1, 0, 0, 1, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 1, 0, 1 } };
-		afficherExactCover(M);
-		
-		Integer[][] M2 = subsets(7);
-		afficherExactCover(M2);
 	}
 
 }
