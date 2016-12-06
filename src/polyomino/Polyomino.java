@@ -7,42 +7,44 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 public class Polyomino {
-	public boolean[][] tuiles; // repr�sentation sous forme d'un tableau de
-								// bool�ens
-	public LinkedList<Point> cases; // repr�sentation sous forme de liste de
-									// cases
+	public boolean[][] tuiles; // representation sous forme d'un tableau de
+								// booleens
 	public int n; // taille du polymino
 	public int largeur, hauteur; // taille du plus petit rectangle le contenant
 
 	// constructeurs
 
+	public static int nombreCases(boolean[][] tuiles){
+		int l = tuiles.length;
+		int h = tuiles[0].length;
+		int n = 0;
+		for (int i = 0; i < l; i++){
+			for (int j = 0; j < h; j++){
+				if (tuiles[i][j]){
+					n++;
+				}
+			}
+		}
+		return n;
+	}
+	
+	
 	public Polyomino(boolean[][] tuiles) {
 		this.tuiles = tuiles;
-		this.cases = toCases(this.tuiles);
-		this.n = this.cases.size();
-		int[] form = format(this.cases);
-		this.largeur = form[0];
-		this.hauteur = form[1];
-	}
-
-	public Polyomino(LinkedList<Point> cases) {
-		this.cases = cases;
-		this.tuiles = toTuiles(this.cases);
-		this.n = this.cases.size();
-		int[] form = format(this.cases);
-		this.largeur = form[0];
-		this.hauteur = form[1];
+		this.n = nombreCases(this.tuiles);
+		this.largeur = this.tuiles.length;
+		this.hauteur = this.tuiles[0].length;
 	}
 
 	public Polyomino(String s) {
 		// Ex : [(0,0), (0,4), (1,0), (1,1), (1,2), (1,3), (1,4), (2,0), (2,4)]
-		// Parsing de la cha�ne en LinkedList
+		// Parsing de la chaine en LinkedList
 		LinkedList<Integer[]> tuilesList = new LinkedList<Integer[]>();
 
-		int k = 1; // Indice courant dans la cha�ne : on commence � la premi�re
-					// parenth�se
+		int k = 1; // Indice courant dans la chaine : on commence a la premiere
+					// parenthese
 		while (k < s.length() - 1) {
-			// On commence chaque boucle � un d�but de parenth�ses
+			// On commence chaque boucle a un debut de parentheses
 			k++;
 			int x = 0, y = 0;
 			while (s.charAt(k) != ',') {
@@ -56,7 +58,7 @@ public class Polyomino {
 			}
 			Integer[] tuile = { x, y };
 			tuilesList.add(tuile);
-			// On regarde si on est arriv�s � la fin
+			// On regarde si on est arrives a la fin
 			k++;
 			if (s.charAt(k) == ',')
 				k += 2;
@@ -75,11 +77,9 @@ public class Polyomino {
 			tableauTuiles[tuile[0]][tuile[1]] = true;
 		}
 		this.tuiles = tableauTuiles;
-		this.cases = toCases(this.tuiles);
-		this.n = this.cases.size();
-		int[] form = format(this.cases);
-		this.largeur = form[0];
-		this.hauteur = form[1];
+		this.n = nombreCases(this.tuiles);
+		this.largeur = this.tuiles.length;
+		this.hauteur = this.tuiles[0].length;
 	}
 
 	public static Polyomino[] importer(String fichier) {
@@ -97,58 +97,6 @@ public class Polyomino {
 		return liste.toArray(new Polyomino[0]);
 	}
 
-	// fonctions de conversion
-
-	public static LinkedList<Point> toCases(boolean[][] tuiles) {
-		// convertit les tuiles en cases
-		LinkedList<Point> cases = new LinkedList<Point>();
-		int largeur = tuiles.length;
-		int hauteur = tuiles[0].length;
-		for (int i = 0; i < largeur; i++) {
-			for (int j = 0; j < hauteur; j++) {
-				if (tuiles[i][j]) {
-					cases.add(new Point(i, j));
-				}
-			}
-		}
-		return cases;
-	}
-
-	public static int[] format(LinkedList<Point> cases) {
-		// renvoie un couple (largeur,hauteur)
-		int largeur = 0;
-		int hauteur = 0;
-		for (Point p : cases) {
-			if (p.x > largeur) {
-				largeur = p.x;
-			}
-			if (p.y > hauteur) {
-				hauteur = p.y;
-			}
-		}
-		int[] form = { largeur + 1, hauteur + 1 };
-		return form;
-	}
-
-	public static boolean[][] toTuiles(LinkedList<Point> cases) {
-		// convertit les cases en tuiles, en supposant que les cases ont pour
-		// coin inf�rieur gauche 0
-		int[] form = format(cases);
-		int largeur = form[0];
-		int hauteur = form[1];
-		boolean[][] tuiles = new boolean[largeur][hauteur];
-		for (int i = 0; i < largeur; i++) {
-			for (int j = 0; j < hauteur; j++) {
-				tuiles[i][j] = false;
-			}
-		}
-		for (Point p : cases) {
-			tuiles[p.x][p.y] = true;
-		}
-		return tuiles;
-
-	}
-
 	// ajout d'une case
 
 	public boolean contientCase(Point p) {
@@ -159,40 +107,56 @@ public class Polyomino {
 	}
 
 	public Polyomino ajouterCase(Point p) {
-		// renvoie le polyomino r�sultant de l'ajout de la case p � this
+		// renvoie le polyomino resultant de l'ajout de la case p a this
 		if (this.contientCase(p)) {
-			System.out.println("Ce polyomino contient d�j� la case " + p);
+			System.out.println("Ce polyomino contient deja la case " + p);
 			return this;
 		} else {
+			// a et b : reequilibrage eventuel si on passe en coordonnees negatives
+			// c et d : reequilibrage eventuel si on depasse hauteur ou largeur
+			// on a toujours a,b,c,d nuls ou valant 1, et jamais à la fois a=1 et c=1 ou b=1 et d=1
 			int a = 0;
-			int b = 0; // r��quilibrage si on passe en coordonn�es n�gatives
-						// (jamais de plus de 1 puisqu'on travaille de proche en
-						// proche)
+			int b = 0; 
+			int c = 0;
+			int d = 0;
 			if (p.x < 0) {
 				a = 1;
 			}
 			if (p.y < 0) {
 				b = 1;
 			}
-			LinkedList<Point> cases2 = new LinkedList<Point>();
-			for (Point c : this.cases) {
-				cases2.add(new Point(c.x + a, c.y + b));
+			if (p.x >= this.largeur){
+				c = 1;
 			}
-			cases2.add(new Point(p.x + a, p.y + b));
-			return new Polyomino(cases2);
+			if (p.y >= this.hauteur){
+				d = 1;
+			}
+			boolean[][] tuiles2 = new boolean[this.largeur + a + c][this.hauteur + b + d];
+			for (int i = 0; i < this.largeur; i++){
+				for (int j = 0; j < this.hauteur; j++){
+					tuiles2[a+i][b+j] = this.tuiles[i][j];
+				}
+			}
+			tuiles2[p.x + a][p.y + b] = true;
+			return new Polyomino(tuiles2);
 		}
 
 	}
 
 	// retourne la liste des polyominos de taille n+1 obtenus en ajoutant une
-	// case sur chaque c�t� de chaque case
+	// case sur chaque cote de chaque case
 
 	public LinkedList<Polyomino> ajouterVoisins() {
 		LinkedList<Polyomino> nouveauxPolyo = new LinkedList<Polyomino>();
-		for (Point c : this.cases) {
-			for (Point v : c.voisins()) {
-				if (!this.contientCase(v)) {
-					nouveauxPolyo.add(this.ajouterCase(v));
+		for (int i = 0; i < this.largeur; i++){
+			for (int j = 0; j < this.hauteur; j++){
+				if (this.tuiles[i][j]){
+					Point p = new Point(i,j);
+					for (Point v : p.voisins()){
+						if (!this.contientCase(v)) {
+							nouveauxPolyo.add(this.ajouterCase(v));
+						}
+					}
 				}
 			}
 		}
@@ -290,7 +254,7 @@ public class Polyomino {
 		return (this.equalsRotations(P) || this.equals(S0) || this.equals(S1) || this.equals(S2) || this.equals(S3));
 	}
 
-	// V�rifie si le polyomino se trouve d�j� dans une liste (à translation
+	// Verifie si le polyomino se trouve deja dans une liste (à translation
 	// près)
 	public boolean estDans(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
@@ -300,7 +264,7 @@ public class Polyomino {
 		return false;
 	}
 
-	// V�rifie si le polyomino se trouve d�j� dans une liste (à isométrie près)
+	// Verifie si le polyomino se trouve d�j� dans une liste (à isométrie près)
 	public boolean estDansIsometries(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
 			if (this.equalsIsometries(P))
@@ -354,8 +318,12 @@ public class Polyomino {
 	@Override
 	public String toString() {
 		String s = "[";
-		for (Point p : this.cases) {
-			s += "(" + p.x + "," + p.y + "), ";
+		for (int i = 0; i < this.largeur; i++){
+			for (int j = 0; j < this.hauteur; j++){
+				if (this.tuiles[i][j]){
+					s += "(" + i + "," + j + ") ";
+				}
+			}
 		}
 		s += "]";
 		return s;
@@ -378,15 +346,6 @@ public class Polyomino {
 
 	public void afficheConsole() {
 		afficherTuiles(this.tuiles);
-	}
-
-	public void afficheConsole2() {
-		for (boolean[] bTab : tuiles) {
-			for (boolean b : bTab) {
-				System.out.print(b ? "O" : " ");
-			}
-			System.out.println();
-		}
 	}
 
 	// Affichage graphique
@@ -443,7 +402,6 @@ public class Polyomino {
 		}
 		
 		Image2dViewer fenetre = new Image2dViewer(img);
-		System.out.println(config.xmax+" "+config.ymax);
 		fenetre.setSize(config.tailleTuiles*config.xmax, config.tailleTuiles*config.ymax+50);
 		fenetre.setLocationRelativeTo(null);
 

@@ -35,8 +35,8 @@ public class Test {
 		for (Polyomino P2 : liste){
 			P2.afficheConsole();
 			out.println();
-			//System.out.println(P2);
-			//System.out.println();
+			System.out.println(P2);
+			System.out.println();
 			
 		// Test de l'affichage des polyominos
 			
@@ -47,7 +47,7 @@ public class Test {
 			polyominoes[i] = p;
 			i++;
 		}
-		//Polyomino.creerFenetre(new Configuration(polyominoes));
+		Polyomino.creerFenetre(new Configuration(polyominoes));
 		
 		// Test de ExactCover
 		
