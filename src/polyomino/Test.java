@@ -28,7 +28,7 @@ public class Test {
 		// Test de la génération des polyominos
 		
 		PrintStream out = System.out;
-		int n = 6;
+		int n = 5;
 		LinkedList<Polyomino> liste2 = Polyomino.genererFixes(n);
 		LinkedList<Polyomino> liste = Polyomino.genererLibres(n);
 		System.out.println();
@@ -47,12 +47,12 @@ public class Test {
 			polyominoes[i] = p;
 			i++;
 		}
-		Polyomino.creerFenetre(new Configuration(polyominoes));
+		//Polyomino.creerFenetre(new Configuration(polyominoes));
 		
 		// Test de ExactCover
 		
-		//Integer[][] M = { { 0, 0, 1, 0, 1, 1, 0 }, { 1, 0, 0, 1, 0, 0, 1 }, { 0, 1, 1, 0, 0, 1, 0 },
-		//		{ 1, 0, 0, 1, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 1, 0, 1 } };
+		Integer[][] M = { { 0, 0, 1, 0, 1, 1, 0 }, { 1, 0, 0, 1, 0, 0, 1 }, { 0, 1, 1, 0, 0, 1, 0 },
+				{ 1, 0, 0, 1, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 1, 0, 1 } };
 		//ExactCover.afficherExactCover(M);
 		
 		//Integer[][] M2 = ExactCover.subsets(7);
