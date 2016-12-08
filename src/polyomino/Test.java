@@ -33,21 +33,21 @@ public class Test {
 		LinkedList<Polyomino> liste = Polyomino.genererLibres(n);
 		System.out.println();
 		for (Polyomino P2 : liste){
-			P2.afficheConsole();
-			out.println();
-			System.out.println(P2);
-			System.out.println();
+			//P2.afficheConsole();
+			//out.println();
+			//System.out.println(P2);
+			//System.out.println();
 			
 		// Test de l'affichage des polyominos
 			
 		}
 		Polyomino[] polyominoes = new Polyomino[liste.size()];
-		int i = 0;
+		int k = 0;
 		for (Polyomino p : liste){
-			polyominoes[i] = p;
-			i++;
+			polyominoes[k] = p;
+			k++;
 		}
-		Polyomino.creerFenetre(new Configuration(polyominoes));
+		//Polyomino.creerFenetre(new Configuration(polyominoes));
 		
 		// Test de ExactCover
 		
@@ -62,6 +62,24 @@ public class Test {
 
 		//DancingLinks D = new DancingLinks(M);
 		//System.out.println(D);
+		
+		// Test de la conversion en exactCover
+		
+		int s = 5;
+		boolean[][] region = new boolean[s][s];
+		for (int i = 0; i < s; i++){
+			for (int j = 0; j < s; j++){
+				region[i][j] = true;
+			}
+		}
+		Integer[][] M3 = ExactCover.toExactCover(region, liste2);
+		/*for (Integer[] X : M3){
+			for (Integer x : X){
+				System.out.print(x);
+			}
+			System.out.println();
+		}*/
+		ExactCover.afficherExactCover(M3);
 	}
 
 }

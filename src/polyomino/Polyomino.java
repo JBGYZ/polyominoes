@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.LinkedList;
 
+import javax.sound.sampled.LineListener;
+
 public class Polyomino {
 	public boolean[][] tuiles; // representation sous forme d'un tableau de
 								// booleens
@@ -14,21 +16,20 @@ public class Polyomino {
 
 	// constructeurs
 
-	public static int nombreCases(boolean[][] tuiles){
+	public static int nombreCases(boolean[][] tuiles) {
 		int l = tuiles.length;
 		int h = tuiles[0].length;
 		int n = 0;
-		for (int i = 0; i < l; i++){
-			for (int j = 0; j < h; j++){
-				if (tuiles[i][j]){
+		for (int i = 0; i < l; i++) {
+			for (int j = 0; j < h; j++) {
+				if (tuiles[i][j]) {
 					n++;
 				}
 			}
 		}
 		return n;
 	}
-	
-	
+
 	public Polyomino(boolean[][] tuiles) {
 		this.tuiles = tuiles;
 		this.n = nombreCases(this.tuiles);
@@ -97,6 +98,74 @@ public class Polyomino {
 		return liste.toArray(new Polyomino[0]);
 	}
 
+	// translation pour exactCover : retourne le polyomino translaté de i0,j0
+
+	public Polyomino translate(int i0, int j0) {
+		boolean[][] tuiles2 = new boolean[this.largeur + i0][this.hauteur + j0];
+		for (int i = 0; i < this.largeur+i0; i++) {
+			for (int j = 0; j < this.hauteur+j0; j++) {
+				if (i >= i0 && j >= j0) {
+					tuiles2[i][j] = this.tuiles[i - i0][j - j0];
+				} else {
+					tuiles2[i][j] = false;
+				}
+			}
+		}
+		return new Polyomino(tuiles2);
+	}
+
+	// vérifie qu'un polyomino est inclus dans la région de l'espace donnée par
+	// une matrice
+
+	public boolean includedIn(boolean[][] region) {
+		int l = region.length;
+		int h = region[0].length;
+		if (this.largeur > l || this.hauteur > h) {
+			return false;
+		}
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (tuiles[i][j] == true && region[i][j] == false) {
+					return false;
+				}
+			}
+		}
+		return true;
+
+	}
+
+	// conversion pour exactCover : retourne la concaténation ligne par ligne
+	// des cases du polyomino se trouvant dans la region, qu'elles soient vides
+	// ou pleines
+
+	public Integer[] toLine(boolean[][] region) {
+		//System.out.println(this.includedIn(region));
+		if (!(this.includedIn(region))) {
+			return new Integer[0];
+		}
+		LinkedList<Integer> lineList = new LinkedList<Integer>();
+		for (int i = 0; i < region.length; i++) {
+			for (int j = 0; j < region[0].length; j++) {
+				if (region[i][j]) {
+					if (i >= this.largeur || j >= this.hauteur) {
+						lineList.add(0);
+					} else if (tuiles[i][j]) {
+						lineList.add(1);
+					} else {
+						lineList.add(0);
+					}
+				}
+			}
+		}
+		Integer[] lineArray = new Integer[lineList.size()];
+		int i = 0;
+		for (int x : lineList) {
+			lineArray[i] = x;
+			i++;
+		}
+		return lineArray;
+	}
+
 	// ajout d'une case
 
 	public boolean contientCase(Point p) {
@@ -112,11 +181,13 @@ public class Polyomino {
 			System.out.println("Ce polyomino contient deja la case " + p);
 			return this;
 		} else {
-			// a et b : reequilibrage eventuel si on passe en coordonnees negatives
+			// a et b : reequilibrage eventuel si on passe en coordonnees
+			// negatives
 			// c et d : reequilibrage eventuel si on depasse hauteur ou largeur
-			// on a toujours a,b,c,d nuls ou valant 1, et jamais à la fois a=1 et c=1 ou b=1 et d=1
+			// on a toujours a,b,c,d nuls ou valant 1, et jamais à la fois a=1
+			// et c=1 ou b=1 et d=1
 			int a = 0;
-			int b = 0; 
+			int b = 0;
 			int c = 0;
 			int d = 0;
 			if (p.x < 0) {
@@ -125,16 +196,16 @@ public class Polyomino {
 			if (p.y < 0) {
 				b = 1;
 			}
-			if (p.x >= this.largeur){
+			if (p.x >= this.largeur) {
 				c = 1;
 			}
-			if (p.y >= this.hauteur){
+			if (p.y >= this.hauteur) {
 				d = 1;
 			}
 			boolean[][] tuiles2 = new boolean[this.largeur + a + c][this.hauteur + b + d];
-			for (int i = 0; i < this.largeur; i++){
-				for (int j = 0; j < this.hauteur; j++){
-					tuiles2[a+i][b+j] = this.tuiles[i][j];
+			for (int i = 0; i < this.largeur; i++) {
+				for (int j = 0; j < this.hauteur; j++) {
+					tuiles2[a + i][b + j] = this.tuiles[i][j];
 				}
 			}
 			tuiles2[p.x + a][p.y + b] = true;
@@ -148,11 +219,11 @@ public class Polyomino {
 
 	public LinkedList<Polyomino> ajouterVoisins() {
 		LinkedList<Polyomino> nouveauxPolyo = new LinkedList<Polyomino>();
-		for (int i = 0; i < this.largeur; i++){
-			for (int j = 0; j < this.hauteur; j++){
-				if (this.tuiles[i][j]){
-					Point p = new Point(i,j);
-					for (Point v : p.voisins()){
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (this.tuiles[i][j]) {
+					Point p = new Point(i, j);
+					for (Point v : p.voisins()) {
 						if (!this.contientCase(v)) {
 							nouveauxPolyo.add(this.ajouterCase(v));
 						}
@@ -287,10 +358,9 @@ public class Polyomino {
 				for (Polyomino P2 : P.ajouterVoisins()) {
 					// On v�rifie que P2 n'est pas d�j� dans liste
 					boolean estDedans;
-					if (isom){ // on prend en compte les isométries
+					if (isom) { // on prend en compte les isométries
 						estDedans = P2.estDansIsometries(liste);
-					}
-					else{ // on ne prend en compte que les translations
+					} else { // on ne prend en compte que les translations
 						estDedans = P2.estDans(liste);
 					}
 					if (!estDedans)
@@ -300,15 +370,15 @@ public class Polyomino {
 			return liste;
 		}
 	}
-	
+
 	public static LinkedList<Polyomino> genererFixes(int n) {
-		LinkedList<Polyomino> liste = generer(n,false);
+		LinkedList<Polyomino> liste = generer(n, false);
 		System.out.println("Il y a " + liste.size() + " polyominos fixes de taille " + n + ".");
 		return liste;
 	}
-	
+
 	public static LinkedList<Polyomino> genererLibres(int n) {
-		LinkedList<Polyomino> liste = generer(n,true);
+		LinkedList<Polyomino> liste = generer(n, true);
 		System.out.println("Il y a " + liste.size() + " polyominos libres de taille " + n + ".");
 		return liste;
 	}
@@ -318,9 +388,9 @@ public class Polyomino {
 	@Override
 	public String toString() {
 		String s = "[";
-		for (int i = 0; i < this.largeur; i++){
-			for (int j = 0; j < this.hauteur; j++){
-				if (this.tuiles[i][j]){
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (this.tuiles[i][j]) {
 					s += "(" + i + "," + j + ") ";
 				}
 			}
@@ -350,7 +420,8 @@ public class Polyomino {
 
 	// Affichage graphique
 
-	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int ymaxTot) {
+	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin,
+			int ymaxTot) {
 		// Ajoute les carrés du polyomino dans l'image img, plus précisément
 		// dans le cadre [xmin,xmax]*[ymin,ymax]
 		for (int i = 0; i < tuiles.length; i++) {
@@ -360,14 +431,16 @@ public class Polyomino {
 							(xmin + i + 1) * tailleTuiles, (xmin + i + 1) * tailleTuiles },
 							ycoords = { (ymaxTot - ymin - j) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
 									(ymaxTot - ymin - (j + 1)) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles };
-					
-					/*System.out.println("" + xcoords[0] / tailleTuiles + " " +
-					xcoords[1] / tailleTuiles + " " + xcoords[2] /
-					tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
-					ycoords[0] / tailleTuiles + " " + ycoords[1] /
-					tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
-					ycoords[3] / tailleTuiles);*/
-					
+
+					/*
+					 * System.out.println("" + xcoords[0] / tailleTuiles + " " +
+					 * xcoords[1] / tailleTuiles + " " + xcoords[2] /
+					 * tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
+					 * ycoords[0] / tailleTuiles + " " + ycoords[1] /
+					 * tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
+					 * ycoords[3] / tailleTuiles);
+					 */
+
 					img.addPolygon(xcoords, ycoords, color);
 					if (i == 0 || !tuiles[i - 1][j]) {
 						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
@@ -398,11 +471,12 @@ public class Polyomino {
 			Polyomino p = config.polyominoes[i];
 			int xmin = config.bottomLeft[i].x;
 			int ymin = config.bottomLeft[i].y;
-			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin, config.ymax);
+			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin,
+					config.ymax);
 		}
-		
+
 		Image2dViewer fenetre = new Image2dViewer(img);
-		fenetre.setSize(config.tailleTuiles*config.xmax, config.tailleTuiles*config.ymax+50);
+		fenetre.setSize(config.tailleTuiles * config.xmax, config.tailleTuiles * config.ymax + 50);
 		fenetre.setLocationRelativeTo(null);
 
 	}
