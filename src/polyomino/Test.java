@@ -1,45 +1,22 @@
 package polyomino;
 
-import java.io.PrintStream;
 import java.util.LinkedList;
 
 public class Test {
 
 	public static void main(String[] args) {
 		
-		// Test des isométries
+		// Test de la generation des polyominos
 		
-		/*System.out.println("Test des isométries :");
-		boolean[][] tuiles = {{true, false, false}, {false, false, true}, {true, true, true}, {false, true, true}};
-		Polyomino.afficherTuiles(tuiles);
-		System.out.println("Rotation d'angle 0");
-		Polyomino.afficherTuiles(Polyomino.rotation(tuiles,0));
-		System.out.println("Rotation d'angle pi/2");
-		Polyomino.afficherTuiles(Polyomino.rotation(tuiles,1));
-		System.out.println("Rotation d'angle pi");
-		Polyomino.afficherTuiles(Polyomino.rotation(tuiles,2));
-		System.out.println("Rotation d'angle 3pi/2");
-		Polyomino.afficherTuiles(Polyomino.rotation(tuiles,3));
-		System.out.println("Symétrie par rapport à x");
-		Polyomino.afficherTuiles(Polyomino.symetrieX(tuiles));
-		System.out.println("Test génération des polyominos :");
-		*/
-		
-		// Test de la génération des polyominos
-		
-		PrintStream out = System.out;
-		int n = 6;
+		int n = 5;
+		/*
 		LinkedList<Polyomino> liste2 = Polyomino.genererFixes(n);
 		LinkedList<Polyomino> liste = Polyomino.genererLibres(n);
 		System.out.println();
+		
 		for (Polyomino P2 : liste){
 			P2.afficheConsole();
-			out.println();
-			//System.out.println(P2);
-			//System.out.println();
-			
-		// Test de l'affichage des polyominos
-			
+			System.out.println();
 		}
 		Polyomino[] polyominoes = new Polyomino[liste.size()];
 		int i = 0;
@@ -47,7 +24,7 @@ public class Test {
 			polyominoes[i] = p;
 			i++;
 		}
-		Polyomino.creerFenetre(new Configuration(polyominoes));
+		Polyomino.creerFenetre(new Configuration(polyominoes));*/
 		
 		// Test de ExactCover
 		
@@ -62,6 +39,11 @@ public class Test {
 
 		//DancingLinks D = new DancingLinks(M);
 		//System.out.println(D);
+		
+		// Test de la generation des polyominos facon Redelmeier (Fixed)
+		LinkedList<Polyomino> liste = RedelmeierGenerator.genererFixe(n);
+		Polyomino[] polyominoes = liste.toArray(new Polyomino[0]);
+		Polyomino.creerFenetre(new Configuration(polyominoes));
 	}
 
 }

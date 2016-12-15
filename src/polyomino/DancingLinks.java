@@ -22,6 +22,7 @@ class Data {
 		C = c;
 	}
 	
+	@Override
 	public String toString(){
 		String s = "Cette donnee est dans la colonne " + this.C;
 		return s;
@@ -39,6 +40,7 @@ class Column extends Data {
 		N = n;
 	}
 	
+	@Override
 	public String toString(){
 		String s = "Cette colonne a pour nom " + this.N + " et pour somme " + this.S + ".";
 		return s;
@@ -52,7 +54,7 @@ public class DancingLinks {
 	public DancingLinks(Integer[][] M) {
 		int cardC = M.length;
 		int cardX = M[0].length;
-		// on crée une matrice de donnees comprenant en premiere ligne les
+		// on cree une matrice de donnees comprenant en premiere ligne les
 		// objets Column, puis un objet Data pour chaque coefficient de M, qu'il soit 0 ou
 		// 1
 		Data[][] donnees = new Data[cardC + 1][cardX];
@@ -107,7 +109,7 @@ public class DancingLinks {
 				d4.U = d0;
 			}
 		}
-		// on supprime les objets Data correspondant à des coefficiens nuls, et on remplit les compteurs S des colonnes en même temps
+		// on supprime les objets Data correspondant a des coefficiens nuls, et on remplit les compteurs S des colonnes en meme temps
 		for (int j = 0; j < cardX; j++) {
 			for (int i = 1; i < cardC + 1; i++) {
 				if (M[i-1][j] == 1){
@@ -132,6 +134,7 @@ public class DancingLinks {
 		}
 	}
 	
+	@Override
 	public String toString(){
 		String s = "Affichage de la structure DancingLinks : \n";
 		for (int j = 0; j < this.colonnes.length; j++){

@@ -7,9 +7,9 @@ import java.io.InputStreamReader;
 import java.util.LinkedList;
 
 public class Polyomino {
-	public boolean[][] tuiles; // repr�sentation sous forme d'un tableau de
-								// bool�ens
-	public LinkedList<Point> cases; // repr�sentation sous forme de liste de
+	public boolean[][] tuiles; // representation sous forme d'un tableau de
+								// booleens
+	public LinkedList<Point> cases; // representation sous forme de liste de
 									// cases
 	public int n; // taille du polymino
 	public int largeur, hauteur; // taille du plus petit rectangle le contenant
@@ -36,13 +36,13 @@ public class Polyomino {
 
 	public Polyomino(String s) {
 		// Ex : [(0,0), (0,4), (1,0), (1,1), (1,2), (1,3), (1,4), (2,0), (2,4)]
-		// Parsing de la cha�ne en LinkedList
+		// Parsing de la chaine en LinkedList
 		LinkedList<Integer[]> tuilesList = new LinkedList<Integer[]>();
 
-		int k = 1; // Indice courant dans la cha�ne : on commence � la premi�re
-					// parenth�se
+		int k = 1; // Indice courant dans la cha�ne : on commence a la premiere
+					// parenthese
 		while (k < s.length() - 1) {
-			// On commence chaque boucle � un d�but de parenth�ses
+			// On commence chaque boucle a un debut de parentheses
 			k++;
 			int x = 0, y = 0;
 			while (s.charAt(k) != ',') {
@@ -56,7 +56,7 @@ public class Polyomino {
 			}
 			Integer[] tuile = { x, y };
 			tuilesList.add(tuile);
-			// On regarde si on est arriv�s � la fin
+			// On regarde si on est arrives a la fin
 			k++;
 			if (s.charAt(k) == ',')
 				k += 2;
@@ -132,7 +132,7 @@ public class Polyomino {
 
 	public static boolean[][] toTuiles(LinkedList<Point> cases) {
 		// convertit les cases en tuiles, en supposant que les cases ont pour
-		// coin inf�rieur gauche 0
+		// coin inferieur gauche 0
 		int[] form = format(cases);
 		int largeur = form[0];
 		int hauteur = form[1];
@@ -159,13 +159,13 @@ public class Polyomino {
 	}
 
 	public Polyomino ajouterCase(Point p) {
-		// renvoie le polyomino r�sultant de l'ajout de la case p � this
+		// renvoie le polyomino resultant de l'ajout de la case p a this
 		if (this.contientCase(p)) {
-			System.out.println("Ce polyomino contient d�j� la case " + p);
+			System.out.println("Ce polyomino contient deja la case " + p);
 			return this;
 		} else {
 			int a = 0;
-			int b = 0; // r��quilibrage si on passe en coordonn�es n�gatives
+			int b = 0; // reequilibrage si on passe en coordonnees negatives
 						// (jamais de plus de 1 puisqu'on travaille de proche en
 						// proche)
 			if (p.x < 0) {
@@ -185,7 +185,7 @@ public class Polyomino {
 	}
 
 	// retourne la liste des polyominos de taille n+1 obtenus en ajoutant une
-	// case sur chaque c�t� de chaque case
+	// case sur chaque cote de chaque case
 
 	public LinkedList<Polyomino> ajouterVoisins() {
 		LinkedList<Polyomino> nouveauxPolyo = new LinkedList<Polyomino>();
@@ -199,7 +199,7 @@ public class Polyomino {
 		return nouveauxPolyo;
 	}
 
-	// fonctions d'isométries
+	// fonctions d'isometries
 
 	public static boolean[][] rotation(boolean[][] tuiles, int n) {
 		// fait tourner le tableau tuiles d'un angle +npi/2
@@ -251,9 +251,9 @@ public class Polyomino {
 		return nouvellesTuiles;
 	}
 
-	// Différentes fonctions d'égalité
+	// Differentes fonctions d'egalite
 
-	// à translation près
+	// a translation pres
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Polyomino) {
@@ -270,7 +270,7 @@ public class Polyomino {
 			return false;
 	}
 
-	// à isométrie directe près (rotations d'angle 0, pi/2, pi, 3pi/2)
+	// a isometrie directe pres (rotations d'angle 0, pi/2, pi, 3pi/2)
 	public boolean equalsRotations(Polyomino P) {
 		Polyomino R0 = new Polyomino(rotation(P.tuiles, 0));
 		Polyomino R1 = new Polyomino(rotation(P.tuiles, 1));
@@ -279,7 +279,7 @@ public class Polyomino {
 		return (this.equals(R0) || this.equals(R1) || this.equals(R2) || this.equals(R3));
 	}
 
-	// à isométrie près (rotations d'angle 0, pi/2, pi, 3pi/2 avec ou sans
+	// a isometrie pres (rotations d'angle 0, pi/2, pi, 3pi/2 avec ou sans
 	// symetrie / x)
 	public boolean equalsIsometries(Polyomino P) {
 		Polyomino S = new Polyomino(symetrieX(P.tuiles));
@@ -290,8 +290,8 @@ public class Polyomino {
 		return (this.equalsRotations(P) || this.equals(S0) || this.equals(S1) || this.equals(S2) || this.equals(S3));
 	}
 
-	// V�rifie si le polyomino se trouve d�j� dans une liste (à translation
-	// près)
+	// Verifie si le polyomino se trouve dans une liste (a translation
+	// pres)
 	public boolean estDans(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
 			if (this.equals(P))
@@ -300,7 +300,7 @@ public class Polyomino {
 		return false;
 	}
 
-	// V�rifie si le polyomino se trouve d�j� dans une liste (à isométrie près)
+	// Verifie si le polyomino se trouve dans une liste (a isometrie pres)
 	public boolean estDansIsometries(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
 			if (this.equalsIsometries(P))
@@ -309,7 +309,7 @@ public class Polyomino {
 		return false;
 	}
 
-	// G�n�ration de tous les polyominos d'ordre n
+	// Generation de tous les polyominos d'ordre n
 
 	public static LinkedList<Polyomino> generer(int n, boolean isom) {
 		if (n == 1) {
@@ -321,9 +321,9 @@ public class Polyomino {
 			LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
 			for (Polyomino P : listePrecedente) {
 				for (Polyomino P2 : P.ajouterVoisins()) {
-					// On v�rifie que P2 n'est pas d�j� dans liste
+					// On verifie que P2 n'est pas deja dans liste
 					boolean estDedans;
-					if (isom){ // on prend en compte les isométries
+					if (isom){ // on prend en compte les isometries
 						estDedans = P2.estDansIsometries(liste);
 					}
 					else{ // on ne prend en compte que les translations
@@ -392,7 +392,7 @@ public class Polyomino {
 	// Affichage graphique
 
 	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int ymaxTot) {
-		// Ajoute les carrés du polyomino dans l'image img, plus précisément
+		// Ajoute les carres du polyomino dans l'image img, plus precisement
 		// dans le cadre [xmin,xmax]*[ymin,ymax]
 		for (int i = 0; i < tuiles.length; i++) {
 			for (int j = 0; j < tuiles[i].length; j++) {
@@ -443,7 +443,7 @@ public class Polyomino {
 		}
 		
 		Image2dViewer fenetre = new Image2dViewer(img);
-		System.out.println(config.xmax+" "+config.ymax);
+		//System.out.println(config.xmax+" "+config.ymax);
 		fenetre.setSize(config.tailleTuiles*config.xmax, config.tailleTuiles*config.ymax+50);
 		fenetre.setLocationRelativeTo(null);
 
