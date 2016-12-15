@@ -9,29 +9,31 @@ import java.util.LinkedList;
 public class Polyomino {
 	public boolean[][] tuiles; // representation sous forme d'un tableau de
 								// booleens
-	public LinkedList<Point> cases; // representation sous forme de liste de
-									// cases
+	
 	public int n; // taille du polymino
 	public int largeur, hauteur; // taille du plus petit rectangle le contenant
 
 	// constructeurs
 
-	public Polyomino(boolean[][] tuiles) {
-		this.tuiles = tuiles;
-		this.cases = toCases(this.tuiles);
-		this.n = this.cases.size();
-		int[] form = format(this.cases);
-		this.largeur = form[0];
-		this.hauteur = form[1];
+	public static int nombreCases(boolean[][] tuiles) {
+		int l = tuiles.length;
+		int h = tuiles[0].length;
+		int n = 0;
+		for (int i = 0; i < l; i++) {
+			for (int j = 0; j < h; j++) {
+				if (tuiles[i][j]) {
+					n++;
+				}
+			}
+		}
+		return n;
 	}
 
-	public Polyomino(LinkedList<Point> cases) {
-		this.cases = cases;
-		this.tuiles = toTuiles(this.cases);
-		this.n = this.cases.size();
-		int[] form = format(this.cases);
-		this.largeur = form[0];
-		this.hauteur = form[1];
+	public Polyomino(boolean[][] tuiles) {
+		this.tuiles = tuiles;
+		this.n = nombreCases(this.tuiles);
+		this.largeur = this.tuiles.length;
+		this.hauteur = this.tuiles[0].length;
 	}
 
 	public Polyomino(String s) {
@@ -39,7 +41,7 @@ public class Polyomino {
 		// Parsing de la chaine en LinkedList
 		LinkedList<Integer[]> tuilesList = new LinkedList<Integer[]>();
 
-		int k = 1; // Indice courant dans la cha�ne : on commence a la premiere
+		int k = 1; // Indice courant dans la chaine : on commence a la premiere
 					// parenthese
 		while (k < s.length() - 1) {
 			// On commence chaque boucle a un debut de parentheses
@@ -75,11 +77,9 @@ public class Polyomino {
 			tableauTuiles[tuile[0]][tuile[1]] = true;
 		}
 		this.tuiles = tableauTuiles;
-		this.cases = toCases(this.tuiles);
-		this.n = this.cases.size();
-		int[] form = format(this.cases);
-		this.largeur = form[0];
-		this.hauteur = form[1];
+		this.n = nombreCases(this.tuiles);
+		this.largeur = this.tuiles.length;
+		this.hauteur = this.tuiles[0].length;
 	}
 
 	public static Polyomino[] importer(String fichier) {
@@ -97,56 +97,72 @@ public class Polyomino {
 		return liste.toArray(new Polyomino[0]);
 	}
 
-	// fonctions de conversion
+	// translation pour exactCover : retourne le polyomino translate de i0,j0
 
-	public static LinkedList<Point> toCases(boolean[][] tuiles) {
-		// convertit les tuiles en cases
-		LinkedList<Point> cases = new LinkedList<Point>();
-		int largeur = tuiles.length;
-		int hauteur = tuiles[0].length;
-		for (int i = 0; i < largeur; i++) {
-			for (int j = 0; j < hauteur; j++) {
-				if (tuiles[i][j]) {
-					cases.add(new Point(i, j));
+	public Polyomino translate(int i0, int j0) {
+		boolean[][] tuiles2 = new boolean[this.largeur + i0][this.hauteur + j0];
+		for (int i = 0; i < this.largeur+i0; i++) {
+			for (int j = 0; j < this.hauteur+j0; j++) {
+				if (i >= i0 && j >= j0) {
+					tuiles2[i][j] = this.tuiles[i - i0][j - j0];
+				} else {
+					tuiles2[i][j] = false;
 				}
 			}
 		}
-		return cases;
+		return new Polyomino(tuiles2);
 	}
 
-	public static int[] format(LinkedList<Point> cases) {
-		// renvoie un couple (largeur,hauteur)
-		int largeur = 0;
-		int hauteur = 0;
-		for (Point p : cases) {
-			if (p.x > largeur) {
-				largeur = p.x;
-			}
-			if (p.y > hauteur) {
-				hauteur = p.y;
+	// verifie qu'un polyomino est inclus dans la region de l'espace donnee par
+	// une matrice
+
+	public boolean includedIn(boolean[][] region) {
+		int l = region.length;
+		int h = region[0].length;
+		if (this.largeur > l || this.hauteur > h) {
+			return false;
+		}
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (tuiles[i][j] == true && region[i][j] == false) {
+					return false;
+				}
 			}
 		}
-		int[] form = { largeur + 1, hauteur + 1 };
-		return form;
+		return true;
+
 	}
 
-	public static boolean[][] toTuiles(LinkedList<Point> cases) {
-		// convertit les cases en tuiles, en supposant que les cases ont pour
-		// coin inferieur gauche 0
-		int[] form = format(cases);
-		int largeur = form[0];
-		int hauteur = form[1];
-		boolean[][] tuiles = new boolean[largeur][hauteur];
-		for (int i = 0; i < largeur; i++) {
-			for (int j = 0; j < hauteur; j++) {
-				tuiles[i][j] = false;
+	// conversion pour exactCover : retourne la concatenation ligne par ligne
+	// des cases du polyomino se trouvant dans la region, qu'elles soient vides
+	// ou pleines
+
+	public Integer[] toLine(boolean[][] region) {
+		//System.out.println(this.includedIn(region));
+		if (!(this.includedIn(region))) {
+			return new Integer[0];
+		}
+		LinkedList<Integer> lineList = new LinkedList<Integer>();
+		for (int i = 0; i < region.length; i++) {
+			for (int j = 0; j < region[0].length; j++) {
+				if (region[i][j]) {
+					if (i >= this.largeur || j >= this.hauteur) {
+						lineList.add(0);
+					} else if (tuiles[i][j]) {
+						lineList.add(1);
+					} else {
+						lineList.add(0);
+					}
+				}
 			}
 		}
-		for (Point p : cases) {
-			tuiles[p.x][p.y] = true;
+		Integer[] lineArray = new Integer[lineList.size()];
+		int i = 0;
+		for (int x : lineList) {
+			lineArray[i] = x;
+			i++;
 		}
-		return tuiles;
-
+		return lineArray;
 	}
 
 	// ajout d'une case
@@ -164,22 +180,35 @@ public class Polyomino {
 			System.out.println("Ce polyomino contient deja la case " + p);
 			return this;
 		} else {
+			// a et b : reequilibrage eventuel si on passe en coordonnees
+			// negatives
+			// c et d : reequilibrage eventuel si on depasse hauteur ou largeur
+			// on a toujours a,b,c,d nuls ou valant 1, et jamais à la fois a=1
+			// et c=1 ou b=1 et d=1
 			int a = 0;
-			int b = 0; // reequilibrage si on passe en coordonnees negatives
-						// (jamais de plus de 1 puisqu'on travaille de proche en
-						// proche)
+			int b = 0;
+			int c = 0;
+			int d = 0;
 			if (p.x < 0) {
 				a = 1;
 			}
 			if (p.y < 0) {
 				b = 1;
 			}
-			LinkedList<Point> cases2 = new LinkedList<Point>();
-			for (Point c : this.cases) {
-				cases2.add(new Point(c.x + a, c.y + b));
+			if (p.x >= this.largeur) {
+				c = 1;
 			}
-			cases2.add(new Point(p.x + a, p.y + b));
-			return new Polyomino(cases2);
+			if (p.y >= this.hauteur) {
+				d = 1;
+			}
+			boolean[][] tuiles2 = new boolean[this.largeur + a + c][this.hauteur + b + d];
+			for (int i = 0; i < this.largeur; i++) {
+				for (int j = 0; j < this.hauteur; j++) {
+					tuiles2[a + i][b + j] = this.tuiles[i][j];
+				}
+			}
+			tuiles2[p.x + a][p.y + b] = true;
+			return new Polyomino(tuiles2);
 		}
 
 	}
@@ -189,10 +218,15 @@ public class Polyomino {
 
 	public LinkedList<Polyomino> ajouterVoisins() {
 		LinkedList<Polyomino> nouveauxPolyo = new LinkedList<Polyomino>();
-		for (Point c : this.cases) {
-			for (Point v : c.voisins()) {
-				if (!this.contientCase(v)) {
-					nouveauxPolyo.add(this.ajouterCase(v));
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (this.tuiles[i][j]) {
+					Point p = new Point(i, j);
+					for (Point v : p.voisins()) {
+						if (!this.contientCase(v)) {
+							nouveauxPolyo.add(this.ajouterCase(v));
+						}
+					}
 				}
 			}
 		}
@@ -325,8 +359,7 @@ public class Polyomino {
 					boolean estDedans;
 					if (isom){ // on prend en compte les isometries
 						estDedans = P2.estDansIsometries(liste);
-					}
-					else{ // on ne prend en compte que les translations
+					} else { // on ne prend en compte que les translations
 						estDedans = P2.estDans(liste);
 					}
 					if (!estDedans)
@@ -336,15 +369,15 @@ public class Polyomino {
 			return liste;
 		}
 	}
-	
+
 	public static LinkedList<Polyomino> genererFixes(int n) {
-		LinkedList<Polyomino> liste = generer(n,false);
+		LinkedList<Polyomino> liste = generer(n, false);
 		System.out.println("Il y a " + liste.size() + " polyominos fixes de taille " + n + ".");
 		return liste;
 	}
-	
+
 	public static LinkedList<Polyomino> genererLibres(int n) {
-		LinkedList<Polyomino> liste = generer(n,true);
+		LinkedList<Polyomino> liste = generer(n, true);
 		System.out.println("Il y a " + liste.size() + " polyominos libres de taille " + n + ".");
 		return liste;
 	}
@@ -354,8 +387,12 @@ public class Polyomino {
 	@Override
 	public String toString() {
 		String s = "[";
-		for (Point p : this.cases) {
-			s += "(" + p.x + "," + p.y + "), ";
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (this.tuiles[i][j]) {
+					s += "(" + i + "," + j + ") ";
+				}
+			}
 		}
 		s += "]";
 		return s;
@@ -380,20 +417,10 @@ public class Polyomino {
 		afficherTuiles(this.tuiles);
 	}
 
-	public void afficheConsole2() {
-		for (boolean[] bTab : tuiles) {
-			for (boolean b : bTab) {
-				System.out.print(b ? "O" : " ");
-			}
-			System.out.println();
-		}
-	}
-
 	// Affichage graphique
 
 	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int ymaxTot) {
 		// Ajoute les carres du polyomino dans l'image img, plus precisement
-		// dans le cadre [xmin,xmax]*[ymin,ymax]
 		for (int i = 0; i < tuiles.length; i++) {
 			for (int j = 0; j < tuiles[i].length; j++) {
 				if (tuiles[i][j]) {
@@ -401,14 +428,16 @@ public class Polyomino {
 							(xmin + i + 1) * tailleTuiles, (xmin + i + 1) * tailleTuiles },
 							ycoords = { (ymaxTot - ymin - j) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
 									(ymaxTot - ymin - (j + 1)) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles };
-					
-					/*System.out.println("" + xcoords[0] / tailleTuiles + " " +
-					xcoords[1] / tailleTuiles + " " + xcoords[2] /
-					tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
-					ycoords[0] / tailleTuiles + " " + ycoords[1] /
-					tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
-					ycoords[3] / tailleTuiles);*/
-					
+
+					/*
+					 * System.out.println("" + xcoords[0] / tailleTuiles + " " +
+					 * xcoords[1] / tailleTuiles + " " + xcoords[2] /
+					 * tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
+					 * ycoords[0] / tailleTuiles + " " + ycoords[1] /
+					 * tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
+					 * ycoords[3] / tailleTuiles);
+					 */
+
 					img.addPolygon(xcoords, ycoords, color);
 					if (i == 0 || !tuiles[i - 1][j]) {
 						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
@@ -439,12 +468,12 @@ public class Polyomino {
 			Polyomino p = config.polyominoes[i];
 			int xmin = config.bottomLeft[i].x;
 			int ymin = config.bottomLeft[i].y;
-			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin, config.ymax);
+			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin,
+					config.ymax);
 		}
-		
+
 		Image2dViewer fenetre = new Image2dViewer(img);
-		//System.out.println(config.xmax+" "+config.ymax);
-		fenetre.setSize(config.tailleTuiles*config.xmax, config.tailleTuiles*config.ymax+50);
+		fenetre.setSize(config.tailleTuiles * config.xmax, config.tailleTuiles * config.ymax + 50);
 		fenetre.setLocationRelativeTo(null);
 
 	}

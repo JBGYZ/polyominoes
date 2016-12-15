@@ -62,8 +62,8 @@ public class ExactCover {
 		}
 		return partitions;
 	}
-	
-	public static void afficherExactCover(Integer[][] M){
+
+	public static void afficherExactCover(Integer[][] M) {
 		System.out.println("On cherche les partitions de la matrice :");
 		afficherMatrice(M);
 		System.out.println();
@@ -87,7 +87,7 @@ public class ExactCover {
 			}
 		}
 		System.out.println("");
-		
+
 	}
 
 	public static int pow(int x, int n) {
@@ -103,16 +103,45 @@ public class ExactCover {
 		}
 	}
 
-	public static Integer[][] subsets(int n){
-		Integer[][] M = new Integer[pow(2,n)][n];
-		for (int i = 0; i < pow(2,n); i++){
+	public static Integer[][] subsets(int n) {
+		Integer[][] M = new Integer[pow(2, n)][n];
+		for (int i = 0; i < pow(2, n); i++) {
 			String s = Integer.toBinaryString(i);
-			while (s.length() < n){
+			while (s.length() < n) {
 				s = "0" + s;
 			}
-			for (int j = 0; j < n; j++){
-				M[i][j] = Integer.decode(""+s.charAt(j));
+			for (int j = 0; j < n; j++) {
+				M[i][j] = Integer.decode("" + s.charAt(j));
 			}
+		}
+		return M;
+	}
+
+	public static Integer[][] toExactCover(boolean[][] region, LinkedList<Polyomino> polys) {
+		LinkedList<Integer[]> lines = new LinkedList<Integer[]>();
+		for (Polyomino P : polys) {
+			//System.out.println("Polyomino de base");
+			//P.afficheConsole();
+			//System.out.println("Polyominos translatés");
+			for (int i0 = 0; i0 <= region.length - P.largeur; i0++) {
+				for (int j0 = 0; j0 <= region[0].length - P.hauteur; j0++) {
+					Polyomino P2 = P.translate(i0, j0);
+					//P2.afficheConsole();
+					Integer[] l = P2.toLine(region);
+					if (l.length > 0){
+						lines.add(l);
+					}
+				}
+			}
+		}
+
+		int p = lines.size(); // nombre de polyominos considérés dans le pavage
+		int c = Polyomino.nombreCases(region); // nombre de cases de la region
+		Integer[][] M = new Integer[p][c];
+		int i = 0;
+		for (Integer[] line : lines) {
+			M[i] = line;
+			i++;
 		}
 		return M;
 	}

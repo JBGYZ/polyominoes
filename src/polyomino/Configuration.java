@@ -36,7 +36,7 @@ public class Configuration {
 			this.ymax = Math.max(this.ymax, p.hauteur);
 		}
 		this.xmax = x;
-		int tailleEcran = 17;
+		int tailleEcran = 12;
 		this.tailleTuiles = tailleEcran * 22 / N;
 		this.width = this.tailleTuiles / 10;
 
