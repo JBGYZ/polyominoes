@@ -26,6 +26,29 @@ public class ExactCover {
 			s = "";
 		}
 	}
+	
+	public static int nbSetsContaining(int x, Integer[][] M, LinkedList<Integer> C){
+		int n = 0;
+		for (int S : C){
+			if (M[S][x] == 1){
+				n += 1;
+			}
+		}
+		return n;
+	}
+	
+	public static int mostFrequent(Integer[][] M, LinkedList<Integer> X, LinkedList<Integer> C){
+		int m = 0;
+		int xTmp = 0;
+		for (int x : X){
+			int n = nbSetsContaining(x,M,C);
+			if (n > m){
+				xTmp = x;
+				m = n;
+			}
+		}
+		return xTmp;
+	}
 
 	@SuppressWarnings("unchecked")
 	public static LinkedList<LinkedList<Integer[]>> exactCover(Integer[][] M, LinkedList<Integer> X,
@@ -33,12 +56,11 @@ public class ExactCover {
 		if (X.isEmpty()) {
 			LinkedList<LinkedList<Integer[]>> partitions = new LinkedList<LinkedList<Integer[]>>();
 			LinkedList<Integer[]> P = new LinkedList<Integer[]>();
-			Integer[] partie = new Integer[0];
-			P.add(partie);
 			partitions.add(P);
 			return partitions;
 		}
 		int x = X.poll();
+		//int x = mostFrequent(M,C);
 		LinkedList<LinkedList<Integer[]>> partitions = new LinkedList<LinkedList<Integer[]>>();
 		for (int S : C) {
 			if (M[S][x] == 1) {
@@ -63,10 +85,9 @@ public class ExactCover {
 		return partitions;
 	}
 
-	public static void afficherExactCover(Integer[][] M) {
-		System.out.println("On cherche les partitions de la matrice :");
-		afficherMatrice(M);
-		System.out.println();
+	public static void displayExactCover(Integer[][] M) {
+		System.out.println("On cherche les partitions de la matrice M :");
+		// afficherMatrice(M);
 		int cardC = M.length;
 		int cardX = M[0].length;
 		LinkedList<Integer> X = new LinkedList<Integer>();
@@ -86,8 +107,9 @@ public class ExactCover {
 				afficherTableau(partie);
 			}
 		}
-		System.out.println("");
-
+		System.out.println();
+		System.out.println("Il en a " + k + " au total.");
+		System.out.println();
 	}
 
 	public static int pow(int x, int n) {
