@@ -7,70 +7,101 @@ public class RedelmeierGenerator {
 	public static LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
 	
 	public static LinkedList<Polyomino> genererFixe(int n) {
-		TableauRelatif tab = new TableauRelatif(-n+1, n-1, -1, n-1);
-		LinkedList<Point> voisins = new Point(0, 0).voisins();
+		TableauRelatif tab = new TableauRelatif(-n+1, n, 0, n);
+		LinkedList<Point> voisins = new LinkedList<Point>();
+		LinkedList<Point> vide = new LinkedList<Point>();
+		/*
+		 * 
+		 * 
+		 * ======X
+		 * =============
+		 * =============
+		 */
+		voisins.add(new Point(0,1));
+		voisins.add(new Point(1,0));
 		tab.set(0, 0, true);
-		auxFixed(tab, voisins, 1, n);
-		for(Polyomino po : liste) {
-			po.afficheConsole();
-			System.out.println("");
-		}
+		auxFixed(tab, vide, voisins, 1, n);
 		return liste;
 	}
 	
-	public static void auxFixed(TableauRelatif tab, LinkedList<Point> voisins, int p, int n) {
-		System.out.println(p);
-		System.out.println(voisins.size());
-		while(!voisins.isEmpty()) {
+	public static void auxFixed(TableauRelatif tab, LinkedList<Point> triedSet, LinkedList<Point> untriedSet, int p, int n) {
+		int tailleTriedSetInitial = triedSet.size();
+		while(!untriedSet.isEmpty()) {
 			// 1
-			Point P = voisins.pop();
-			
+			Point P = untriedSet.pop();
 			// 2
 			tab.set(P.getx(), P.gety(), true);
-			
-			
 			// 3
-			if (p==n){
+			if (p + 1 == n){
 				Polyomino P1 = tab.getPolyomino();
-				P1.afficheConsole();
 				liste.add(P1);
 			}
 			
 			// 4
-			if(p + 1 <= n) {
+			if(p + 1 < n) {
 				// 4.a
-				int nombreNouveauxVoisins = 0;
+				LinkedList<Point> copieUntriedSet = cloneList(untriedSet);
 				for(Point voisin : P.voisins()) {
-					boolean estDansLaZone =
-							(
-									voisin.getx() > tab.xMin
-									|| (voisin.getx() == tab.xMin && voisin.gety() >= 0)
-							)
-							&& voisin.gety() >= tab.yMin
-							&& voisin.getx() <= tab.xMax
-							&& voisin.gety() <= tab.yMax;
+					boolean estDansLaZone = (voisin.getx() > 0 && voisin.gety() >= 0)
+							|| (voisin.gety() > 0);
 					if(estDansLaZone
-							&& !tab.get(voisin.getx(), voisin.gety())) {
-						nombreNouveauxVoisins++;
-						voisins.add(voisin);
+							&& !tab.get(voisin.getx(), voisin.gety())
+							&& !estDans(voisin, triedSet)
+							&& !estDans(voisin, untriedSet)) {
+						copieUntriedSet.add(voisin);
 					}
-					//System.out.println(voisin.getx() > tab.xMin);
 				}
 				
 				// 4.b
-				auxFixed(tab, voisins, p+1, n);
+				auxFixed(tab, triedSet, copieUntriedSet, p+1, n);
 				
 				// 4.c
-				for(int i = 0; i < nombreNouveauxVoisins; i++) {
-					if (!voisins.isEmpty()) voisins.pop();
-				}
+				/*for(int i = 0; i < nombreNouveauxVoisins; i++) {
+					if (!untriedSet.isEmpty()) untriedSet.pop();
+				}*/
 			}
 			
 			// 5
+			triedSet.add(P);
 			tab.set(P.getx(), P.gety(), false);
 		}
 		
+		while(triedSet.size() > tailleTriedSetInitial) triedSet.pollLast();
+		
 	}
+
+	public static LinkedList<Point> cloneList(LinkedList<Point> untriedSet) {
+		LinkedList<Point> res = new LinkedList<Point>();
+		for(Point P : untriedSet) {
+			res.add(new Point(P.getx(), P.gety()));
+		}
+		return res;
+	}
+	
+	public static void printList(LinkedList<Point> l) {
+		String s = "";
+		for(Point P : l) {
+			s += P.toString()+" ";
+		}
+		System.out.println(s);
+	}
+	
+	public static void printList(LinkedList<Point> l, String s1) {
+		String s = s1+" : ";
+		for(Point P : l) {
+			s += P.toString()+" ";
+		}
+		System.out.println(s);
+	}
+	
+	public static boolean estDans(Point A, LinkedList<Point> liste) {
+		for (Point P : liste) {
+			if (A.equals(P))
+				return true;
+		}
+		return false;
+	}
+
 }
 
 class TableauRelatif {
