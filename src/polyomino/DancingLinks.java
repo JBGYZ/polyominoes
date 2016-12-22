@@ -28,9 +28,8 @@ class Data {
 		this.i = i;
 		this.j = j;
 	}
-	
-	
-	public boolean equalsData(Data x){
+
+	public boolean equalsData(Data x) {
 		return (this.i == x.i && this.j == x.j);
 	}
 
@@ -118,11 +117,11 @@ class Column extends Data {
 		}
 		return s;
 	}
-	
-	public boolean equalsColumn(Column x){
+
+	public boolean equalsColumn(Column x) {
 		Data y1 = this.D;
 		Data y2 = x.D;
-		while (y1.equalsData(y2) && !(y1.equalsData(this))){
+		while (y1.equalsData(y2) && !(y1.equalsData(this))) {
 			y1 = y1.D;
 			y2 = y2.D;
 		}
@@ -208,12 +207,12 @@ public class DancingLinks {
 		this.H.L.R = this.H;
 		this.H.R.L = this.H;
 	}
-	
-	public boolean equalsDL(DancingLinks d){
+
+	public boolean equalsDL(DancingLinks d) {
 		Column x1 = (Column) this.H.R;
 		Column x2 = (Column) d.H.R;
-		while (x1.equalsColumn(x2) && !(x1.equalsData(this.H))){
-			if (x1.R == this.H){
+		while (x1.equalsColumn(x2) && !(x1.equalsData(this.H))) {
+			if (x1.R == this.H) {
 				return true;
 			}
 			x1 = (Column) x1.R;
@@ -237,10 +236,11 @@ public class DancingLinks {
 		x.L.R = x.R;
 		for (Data t = x.D; !(t == x); t = t.D) {
 			for (Data y = t.R; !(y == t); y = y.R) {
-				y.D.U = y.U;
-				y.U.D = y.D;
-				y.C.S--;
-
+				if (!(y.i == -1)) {
+					y.D.U = y.U;
+					y.U.D = y.D;
+					y.C.S--;
+				}
 			}
 		}
 	}
@@ -250,30 +250,33 @@ public class DancingLinks {
 		x.L.R = x;
 		for (Data t = x.U; !(t == x); t = t.U) {
 			for (Data y = t.L; !(y == t); y = y.L) {
-				y.D.U = y;
-				y.U.D = y;
-				y.C.S++;
-
+				if (!(y.i == -1)) {
+					y.D.U = y;
+					y.U.D = y;
+					y.C.S++;
+				}
 			}
 		}
 	}
 
 	public static LinkedList<LinkedList<LinkedList<Integer>>> exactCover(Data H) {
 		if (H.R == H) {
+			// aucun element, on renvoie un ensemble de partitions constitue
+			// d'une partition vide P
 			LinkedList<LinkedList<LinkedList<Integer>>> partitions = new LinkedList<LinkedList<LinkedList<Integer>>>();
 			LinkedList<LinkedList<Integer>> P = new LinkedList<LinkedList<Integer>>();
 			partitions.add(P);
 			return partitions;
 		}
 		LinkedList<LinkedList<LinkedList<Integer>>> partitions = new LinkedList<LinkedList<LinkedList<Integer>>>();
-		Column x = (Column) H.L;
+		Data x = H.L; // premier element a couvrir
 		coverColumn(x.C);
-		for (Data t = x.U; !(t == x); t = t.U) {
+		for (Data t = x.U; !(t == x); t = t.U) { // t est sur la ligne du sous-ensemble par lequel on le couvre
 			for (Data y = t.L; !(y == t); y = y.L) {
 				coverColumn(y.C);
 			}
+			LinkedList<Integer> set = t.toList();
 			for (LinkedList<LinkedList<Integer>> P : exactCover(H)) {
-				LinkedList<Integer> set = t.toList();
 				P.add(set);
 				partitions.add(P);
 			}
