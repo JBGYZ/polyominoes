@@ -9,7 +9,7 @@ import java.util.LinkedList;
 public class Polyomino {
 	public boolean[][] tuiles; // representation sous forme d'un tableau de
 								// booleens
-	
+
 	public int n; // taille du polymino
 	public int largeur, hauteur; // taille du plus petit rectangle le contenant
 
@@ -95,74 +95,6 @@ public class Polyomino {
 			System.out.println(e.toString());
 		}
 		return liste.toArray(new Polyomino[0]);
-	}
-
-	// translation pour exactCover : retourne le polyomino translate de i0,j0
-
-	public Polyomino translate(int i0, int j0) {
-		boolean[][] tuiles2 = new boolean[this.largeur + i0][this.hauteur + j0];
-		for (int i = 0; i < this.largeur+i0; i++) {
-			for (int j = 0; j < this.hauteur+j0; j++) {
-				if (i >= i0 && j >= j0) {
-					tuiles2[i][j] = this.tuiles[i - i0][j - j0];
-				} else {
-					tuiles2[i][j] = false;
-				}
-			}
-		}
-		return new Polyomino(tuiles2);
-	}
-
-	// verifie qu'un polyomino est inclus dans la region de l'espace donnee par
-	// une matrice
-
-	public boolean includedIn(boolean[][] region) {
-		int l = region.length;
-		int h = region[0].length;
-		if (this.largeur > l || this.hauteur > h) {
-			return false;
-		}
-		for (int i = 0; i < this.largeur; i++) {
-			for (int j = 0; j < this.hauteur; j++) {
-				if (tuiles[i][j] == true && region[i][j] == false) {
-					return false;
-				}
-			}
-		}
-		return true;
-
-	}
-
-	// conversion pour exactCover : retourne la concatenation ligne par ligne
-	// des cases du polyomino se trouvant dans la region, qu'elles soient vides
-	// ou pleines
-
-	public Integer[] toLine(boolean[][] region) {
-		//System.out.println(this.includedIn(region));
-		if (!(this.includedIn(region))) {
-			return new Integer[0];
-		}
-		LinkedList<Integer> lineList = new LinkedList<Integer>();
-		for (int i = 0; i < region.length; i++) {
-			for (int j = 0; j < region[0].length; j++) {
-				if (region[i][j]) {
-					if (i >= this.largeur || j >= this.hauteur) {
-						lineList.add(0);
-					} else if (tuiles[i][j]) {
-						lineList.add(1);
-					} else {
-						lineList.add(0);
-					}
-				}
-			}
-		}
-		Integer[] lineArray = new Integer[lineList.size()];
-		int i = 0;
-		for (int x : lineList) {
-			lineArray[i] = x;
-			i++;
-		}
-		return lineArray;
 	}
 
 	// ajout d'une case
@@ -357,7 +289,7 @@ public class Polyomino {
 				for (Polyomino P2 : P.ajouterVoisins()) {
 					// On verifie que P2 n'est pas deja dans liste
 					boolean estDedans;
-					if (isom){ // on prend en compte les isometries
+					if (isom) { // on prend en compte les isometries
 						estDedans = P2.estDansIsometries(liste);
 					} else { // on ne prend en compte que les translations
 						estDedans = P2.estDans(liste);
@@ -419,7 +351,8 @@ public class Polyomino {
 
 	// Affichage graphique
 
-	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin, int ymaxTot) {
+	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin,
+			int ymaxTot) {
 		// Ajoute les carres du polyomino dans l'image img, plus precisement
 		for (int i = 0; i < tuiles.length; i++) {
 			for (int j = 0; j < tuiles[i].length; j++) {
@@ -477,4 +410,153 @@ public class Polyomino {
 		fenetre.setLocationRelativeTo(null);
 
 	}
+
+	// translation pour exactCover : retourne le polyomino translate de i0,j0
+	// (attention son coin inferieur gauche n'est plus forcement en (0,0))
+
+	public Polyomino translate(int i0, int j0) {
+		boolean[][] tuiles2 = new boolean[this.largeur + i0][this.hauteur + j0];
+		for (int i = 0; i < this.largeur + i0; i++) {
+			for (int j = 0; j < this.hauteur + j0; j++) {
+				if (i >= i0 && j >= j0) {
+					tuiles2[i][j] = this.tuiles[i - i0][j - j0];
+				} else {
+					tuiles2[i][j] = false;
+				}
+			}
+		}
+		return new Polyomino(tuiles2);
+	}
+
+	// verifie qu'un polyomino est inclus dans la region de l'espace donnee par
+	// une matrice
+
+	public boolean includedIn(boolean[][] region) {
+		int l = region.length;
+		int h = region[0].length;
+		if (this.largeur > l || this.hauteur > h) {
+			return false;
+		}
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (tuiles[i][j] == true && region[i][j] == false) {
+					return false;
+				}
+			}
+		}
+		return true;
+
+	}
+
+	// retourne la concatenation ligne par ligne
+	// des cases du polyomino se trouvant dans la region, qu'elles soient vides
+	// ou pleines
+
+	public Integer[] toLine(boolean[][] region) {
+		if (!(this.includedIn(region))) {
+			return new Integer[0];
+		}
+		LinkedList<Integer> lineList = new LinkedList<Integer>();
+		for (int i = 0; i < region.length; i++) {
+			for (int j = 0; j < region[0].length; j++) {
+				if (region[i][j]) {
+					if (i >= this.largeur || j >= this.hauteur) {
+						lineList.add(0);
+					} else if (tuiles[i][j]) {
+						lineList.add(1);
+					} else {
+						lineList.add(0);
+					}
+				}
+			}
+		}
+		Integer[] lineArray = new Integer[lineList.size()];
+		int i = 0;
+		for (int x : lineList) {
+			lineArray[i] = x;
+			i++;
+		}
+		return lineArray;
+	}
+
+	// retourne la liste des points correspondant a chaque entree de la
+	// concatenation ligne par ligne de region
+
+	public static Point[] casesLine(boolean[][] region) {
+		LinkedList<Point> pts = new LinkedList<Point>();
+		for (int i = 0; i < region.length; i++) {
+			for (int j = 0; j < region[0].length; j++) {
+				if (region[i][j]) {
+					pts.add(new Point(i, j));
+				}
+			}
+		}
+		return pts.toArray(new Point[pts.size()]);
+	}
+
+	// retourne le polyomino correspondant a la ligne creee par toLine dans la
+	// region
+
+	public static Polyomino fromLine(boolean[][] region, Integer[] line) {
+		boolean[][] tuiles = new boolean[region.length][region[0].length];
+		for (int i = 0; i < region.length; i++) {
+			for (int j = 0; j < region[0].length; j++) {
+				tuiles[i][j] = false;
+			}
+		}
+		Point[] cases = casesLine(region);
+		for (int k = 0; k < line.length; k++) {
+			Point p = cases[k];
+			if (line[k] == 1) {
+				tuiles[p.x][p.y] = true;
+			}
+		}
+		return new Polyomino(tuiles);
+	}
+
+	// retourne la formulation matricielle du problème ExactCover de region par
+	// les polyominos de la liste polys
+
+	public static Integer[][] toExactCover(boolean[][] region, LinkedList<Polyomino> polys) {
+		LinkedList<Integer[]> lines = new LinkedList<Integer[]>();
+		for (Polyomino P : polys) {
+			// System.out.println("Polyomino de base");
+			// P.afficheConsole();
+			// System.out.println("Polyominos translates");
+			for (int i0 = 0; i0 <= region.length - P.largeur; i0++) {
+				for (int j0 = 0; j0 <= region[0].length - P.hauteur; j0++) {
+					Polyomino P2 = P.translate(i0, j0);
+					// P2.afficheConsole();
+					Integer[] l = P2.toLine(region);
+					if (l.length > 0) {
+						lines.add(l);
+					}
+				}
+			}
+		}
+
+		int p = lines.size(); // nombre de polyominos considérés dans le pavage
+		int c = Polyomino.nombreCases(region); // nombre de cases de la region
+		Integer[][] M = new Integer[p][c];
+		int i = 0;
+		for (Integer[] line : lines) {
+			M[i] = line;
+			i++;
+		}
+		return M;
+	}
+	
+	// retraduit une partition renvoyee par ExactCover en liste de Polyominos pour l'affichage
+
+	public static Polyomino[] fromExactCover(boolean[][] region, LinkedList<Integer[]> partition) {
+		LinkedList<Polyomino> polys = new LinkedList<Polyomino>();
+		Point[] cases = casesLine(region);
+		polys.add(new Polyomino(region));
+		for (Integer[] line : partition) {
+			Polyomino p = fromLine(region, line);
+			polys.add(p);
+		}
+		return polys.toArray(new Polyomino[polys.size()]);
+	}
+
 }
