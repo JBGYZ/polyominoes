@@ -259,25 +259,24 @@ public class DancingLinks {
 		}
 	}
 
-	public static LinkedList<LinkedList<LinkedList<Integer>>> exactCover(Data H) {
+	public static LinkedList<LinkedList<Data>> exactCover(Data H) {
 		if (H.R == H) {
 			// aucun element, on renvoie un ensemble de partitions constitue
 			// d'une partition vide P
-			LinkedList<LinkedList<LinkedList<Integer>>> partitions = new LinkedList<LinkedList<LinkedList<Integer>>>();
-			LinkedList<LinkedList<Integer>> P = new LinkedList<LinkedList<Integer>>();
+			LinkedList<LinkedList<Data>> partitions = new LinkedList<LinkedList<Data>>();
+			LinkedList<Data> P = new LinkedList<Data>();
 			partitions.add(P);
 			return partitions;
 		}
-		LinkedList<LinkedList<LinkedList<Integer>>> partitions = new LinkedList<LinkedList<LinkedList<Integer>>>();
+		LinkedList<LinkedList<Data>> partitions = new LinkedList<LinkedList<Data>>();
 		Data x = H.L; // premier element a couvrir
 		coverColumn(x.C);
 		for (Data t = x.U; !(t == x); t = t.U) { // t est sur la ligne du sous-ensemble par lequel on le couvre
 			for (Data y = t.L; !(y == t); y = y.L) {
 				coverColumn(y.C);
 			}
-			LinkedList<Integer> set = t.toList();
-			for (LinkedList<LinkedList<Integer>> P : exactCover(H)) {
-				P.add(set);
+			for (LinkedList<Data> P : exactCover(H)) {
+				P.add(t);
 				partitions.add(P);
 			}
 			for (Data y = t.R; !(y == t); y = y.R) {
@@ -293,14 +292,14 @@ public class DancingLinks {
 		System.out.println();
 		int k = 0;
 		DancingLinks D = new DancingLinks(M);
-		LinkedList<LinkedList<LinkedList<Integer>>> partitions = exactCover(D.H);
-		for (LinkedList<LinkedList<Integer>> P : partitions) {
+		LinkedList<LinkedList<Data>> partitions = exactCover(D.H);
+		for (LinkedList<Data> P : partitions) {
 			k += 1;
 			System.out.println("Partition numero " + k);
-			for (LinkedList<Integer> partie : P) {
+			for (Data partie : P) {
 				String s = "";
-				for (int i : partie) {
-					s += "" + i + " ";
+				for (int i : partie.toArray(M[0].length)) {
+					s += "" + i;
 				}
 				System.out.println(s);
 			}
