@@ -34,20 +34,20 @@ public class Test {
 		}*/
 		//Polyomino.creerFenetre(new Configuration(polyominoes));
 		
-		// Test de ExactCover
+		// Test de ExactCover et DancingLinks
 		
-		@SuppressWarnings("unused")
-		Integer[][] M = { { 0, 0, 1, 0, 1, 1, 0 }, { 1, 0, 0, 1, 0, 0, 1 }, { 0, 1, 1, 0, 0, 1, 0 },
-				{ 1, 0, 0, 1, 0, 0, 0 }, { 0, 1, 0, 0, 0, 0, 1 }, { 0, 0, 0, 1, 1, 0, 1 } };
-		//ExactCover.afficherExactCover(M);
+		Integer[][] M = { 
+				{ 0, 0, 1, 0, 1, 1, 0 }, 
+				{ 1, 0, 0, 1, 0, 0, 1 }, 
+				{ 0, 1, 1, 0, 0, 1, 0 },
+				{ 1, 0, 0, 1, 0, 0, 0 }, 
+				{ 0, 1, 0, 0, 0, 0, 1 }, 
+				{ 0, 0, 0, 1, 1, 0, 1 } };
 		
-		//Integer[][] M2 = ExactCover.subsets(7);
-		//ExactCover.afficherExactCover(M2);
+		Integer[][] M2 = ExactCover.subsets(5);
 		
-		// Test de DancingLinks
-
-		//DancingLinks D = new DancingLinks(M);
-		//System.out.println(D);
+		ExactCover.displayExactCover(M);
+		DancingLinks.displayExactCover(M);
 		
 		// Test de la generation des polyominos facon Redelmeier (Fixed)
 		//n = 5;
@@ -79,8 +79,6 @@ public class Test {
 			System.out.println();
 		}
 		ExactCover.afficherExactCover(M3);*/
-		
-		
 	}
 
 }
