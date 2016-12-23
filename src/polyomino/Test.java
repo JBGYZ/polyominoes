@@ -50,13 +50,12 @@ public class Test {
 		DancingLinks.displayExactCover(M);
 		
 		// Test de la generation des polyominos facon Redelmeier (Fixed)
-		//n = 5;
-		long t3 = System.currentTimeMillis();
+		/*long t3 = System.currentTimeMillis();
 		LinkedList<Polyomino> liste1 = RedelmeierGenerator.genererFixe(n);
 		long t4 = System.currentTimeMillis();
 		Polyomino[] polyominoes = liste1.toArray(new Polyomino[0]);
 		System.out.println(liste1.size());
-		System.out.println(t4-t3+" opérations");
+		System.out.println(t4-t3+" opérations");*/
 		//Polyomino.creerFenetre(new Configuration(polyominoes));
 		
 		

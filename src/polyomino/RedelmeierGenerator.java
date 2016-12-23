@@ -54,11 +54,6 @@ public class RedelmeierGenerator {
 				
 				// 4.b
 				auxFixed(tab, triedSet, copieUntriedSet, p+1, n);
-				
-				// 4.c
-				/*for(int i = 0; i < nombreNouveauxVoisins; i++) {
-					if (!untriedSet.isEmpty()) untriedSet.pop();
-				}*/
 			}
 			
 			// 5
