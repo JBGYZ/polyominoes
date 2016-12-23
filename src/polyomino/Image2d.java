@@ -128,6 +128,7 @@ class Image2dViewer extends JFrame {
 	private static final long serialVersionUID = -7498525833438154949L;
 	static int xLocation = 0;
 	Image2d img;
+	Image2dComponent imgComponent;
 
 	public Image2dViewer(Image2d img) {
 		this.img = img;
@@ -135,7 +136,8 @@ class Image2dViewer extends JFrame {
 		this.setLocation(xLocation, 0);
 		setTitle("Projet d'INF421 : pavages de polyominos");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		add(new Image2dComponent(img));
+		imgComponent = new Image2dComponent(img);
+		add(imgComponent);
 		pack();
 		setVisible(true);
 		xLocation += img.getWidth();

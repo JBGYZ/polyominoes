@@ -363,7 +363,6 @@ public class Polyomino {
 		return liste;
 	}
 
-	// Conversion vers et depuis exactCover
 
 	// translation pour exactCover : retourne le polyomino translate de i0,j0
 	// (attention son coin inferieur gauche n'est plus forcement en (0,0))
@@ -660,7 +659,7 @@ public class Polyomino {
 		return color;
 	}
 
-	public static void creerFenetre(Configuration config) {
+	public static Image2dViewer creerFenetre(Configuration config) {
 		Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue, Color.gray, Color.cyan, Color.magenta,
 				Color.orange, Color.lightGray };
 		Image2d img = new Image2d(config.xmax * config.tailleTuiles, config.ymax * config.tailleTuiles);
@@ -677,6 +676,7 @@ public class Polyomino {
 		Image2dViewer fenetre = new Image2dViewer(img);
 		fenetre.setSize(config.tailleTuiles * config.xmax, config.tailleTuiles * config.ymax + 23);
 		fenetre.setLocationRelativeTo(null);
+		return fenetre;
 
 	}
 

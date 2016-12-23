@@ -46,17 +46,17 @@ public class Test {
 
 		// Test de la generation des polyominos facon Redelmeier (Fixed)
 
-		/*
-		 * n = 5; long t3 = System.currentTimeMillis(); LinkedList<Polyomino>
-		 * liste1 = RedelmeierGenerator.genererFixe(n); long t4 =
-		 * System.currentTimeMillis(); Polyomino[] polyominoes =
-		 * liste1.toArray(new Polyomino[0]); System.out.println(liste1.size());
-		 * System.out.println(t4-t3+" op�rations"); Polyomino.creerFenetre(new
-		 * Configuration(polyominoes));
-		 */
-
-		// Test de la conversion en exactCover et de l'affichage
+		/*long t3 = System.currentTimeMillis();
+		LinkedList<Polyomino> liste1 = RedelmeierGenerator.genererFixe(n);
+		long t4 = System.currentTimeMillis();
+		Polyomino[] polyominoes = liste1.toArray(new Polyomino[0]);
+		System.out.println(liste1.size());
+		System.out.println(t4-t3+" operations");*/
+		//Polyomino.creerFenetre(new Configuration(polyominoes));
 		
+		
+		// Test de la conversion en exactCover et de l'affichage
+
 		// region rectangulaire de taille s, tous les polyominos d'une taille donnée
 
 		/*
@@ -102,6 +102,7 @@ public class Test {
 
 		LinkedList<Integer[]> partition = DancingLinks.findExactCover(M3);
 		Polyomino[] polys = Polyomino.fromExactCover(region, partition);
+<<<<<<< HEAD
 		Polyomino.creerFenetre(new Configuration(polys, true));
 		*/
 		
@@ -139,9 +140,10 @@ public class Test {
 		
 		LinkedList<Integer[]> partition = DancingLinks.findExactCover(M3);
 		Polyomino[] polys = Polyomino.fromExactCoverUnique(region, partition);
-		Polyomino.creerFenetre(new Configuration(polys, true));
 		
-
+		Image2dViewer fenetre = Polyomino.creerFenetre(new Configuration(polys, true));
+		ExtracteurImage ext = new ExtracteurImage();
+		ext.ecrire(fenetre.imgComponent, "C:/Users/Clement/Desktop/image.jpg");
 	}
 
 }
