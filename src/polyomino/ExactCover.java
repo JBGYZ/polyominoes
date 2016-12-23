@@ -1,6 +1,7 @@
 package polyomino;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 public class ExactCover {
 
@@ -87,7 +88,7 @@ public class ExactCover {
 
 	public static void displayExactCover(Integer[][] M) {
 		System.out.println("On cherche les partitions de la matrice M :");
-		// afficherMatrice(M);
+		afficherMatrice(M);
 		int cardC = M.length;
 		int cardX = M[0].length;
 		LinkedList<Integer> X = new LinkedList<Integer>();
@@ -110,6 +111,23 @@ public class ExactCover {
 		System.out.println();
 		System.out.println("Il en a " + k + " au total.");
 		System.out.println();
+	}
+	
+	public static LinkedList<Integer[]> findExactCover(Integer[][] M) {
+		int cardC = M.length;
+		int cardX = M[0].length;
+		LinkedList<Integer> X = new LinkedList<Integer>();
+		LinkedList<Integer> C = new LinkedList<Integer>();
+		for (int x = 0; x < cardX; x++) {
+			X.add(x);
+		}
+		for (int c = 0; c < cardC; c++) {
+			C.add(c);
+		}
+		LinkedList<LinkedList<Integer[]>> partitions = exactCover(M, X, C);
+		Random randomGenerator = new Random();
+		int k = randomGenerator.nextInt(partitions.size());
+		return partitions.get(k);
 	}
 
 	public static int pow(int x, int n) {
@@ -135,35 +153,6 @@ public class ExactCover {
 			for (int j = 0; j < n; j++) {
 				M[i][j] = Integer.decode("" + s.charAt(j));
 			}
-		}
-		return M;
-	}
-
-	public static Integer[][] toExactCover(boolean[][] region, LinkedList<Polyomino> polys) {
-		LinkedList<Integer[]> lines = new LinkedList<Integer[]>();
-		for (Polyomino P : polys) {
-			//System.out.println("Polyomino de base");
-			//P.afficheConsole();
-			//System.out.println("Polyominos translatés");
-			for (int i0 = 0; i0 <= region.length - P.largeur; i0++) {
-				for (int j0 = 0; j0 <= region[0].length - P.hauteur; j0++) {
-					Polyomino P2 = P.translate(i0, j0);
-					//P2.afficheConsole();
-					Integer[] l = P2.toLine(region);
-					if (l.length > 0){
-						lines.add(l);
-					}
-				}
-			}
-		}
-
-		int p = lines.size(); // nombre de polyominos considérés dans le pavage
-		int c = Polyomino.nombreCases(region); // nombre de cases de la region
-		Integer[][] M = new Integer[p][c];
-		int i = 0;
-		for (Integer[] line : lines) {
-			M[i] = line;
-			i++;
 		}
 		return M;
 	}
