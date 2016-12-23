@@ -18,28 +18,6 @@ public class Configuration {
 		this.width = width;
 	}
 
-	public Configuration(Polyomino[] polyominoes) {
-		this.polyominoes = polyominoes;
-		int N = this.polyominoes.length;
-		this.bottomLeft = new Point[N];
-		for (int i = 0; i < N; i++) {
-			this.bottomLeft[i] = new Point();
-		}
-		int x = 0;
-		this.ymax = 0;
-		for (int i = 0; i < N; i++) {
-			Polyomino p = this.polyominoes[i];
-			this.bottomLeft[i].x = x;
-			this.bottomLeft[i].y = 0;
-			x += p.largeur + 1;
-			this.ymax = Math.max(this.ymax, p.hauteur);
-		}
-		this.xmax = x;
-		int tailleEcran = 12;
-		this.tailleTuiles = tailleEcran * 12 / N;
-		this.width = this.tailleTuiles / 10;
-	}
-
 	public Configuration(Polyomino[] polyominoes, boolean superposition) {
 		this.polyominoes = polyominoes;
 		int N = this.polyominoes.length;
@@ -64,7 +42,7 @@ public class Configuration {
 			this.xmax = x;
 		}
 		int tailleEcran = 13;
-		int facteur = 45;
+		int facteur = 50;
 		if (superposition) {
 			this.tailleTuiles = tailleEcran * facteur / (Math.max(this.xmax, this.ymax));
 		} else {
