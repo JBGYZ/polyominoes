@@ -1,6 +1,7 @@
 package polyomino;
 
 import java.awt.Color;
+import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -217,9 +218,53 @@ public class Polyomino {
 		return nouvellesTuiles;
 	}
 
+	// renvoie la liste de tous les polyominos fixes obtenus a partir d'un
+	// polyomino libre (au maximum 8)
+
+	public static LinkedList<Polyomino> copains(Polyomino P) {
+		LinkedList<Polyomino> cop = new LinkedList<Polyomino>();
+		Polyomino Q;
+		boolean[][] t = P.tuiles;
+		boolean[][] t2 = symetrieX(t);
+		Q = new Polyomino(rotation(t, 0));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		Q = new Polyomino(rotation(t, 1));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		Q = new Polyomino(rotation(t, 2));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		Q = new Polyomino(rotation(t, 3));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		Q = new Polyomino(rotation(t2, 0));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		Q = new Polyomino(rotation(t2, 1));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		Q = new Polyomino(rotation(t2, 2));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		Q = new Polyomino(rotation(t2, 3));
+		if (!(Q.estDans(cop))) {
+			cop.add(Q);
+		}
+		return cop;
+	}
+
 	// Differentes fonctions d'egalite
 
 	// a translation pres
+
 	@Override
 	public boolean equals(Object o) {
 		if (o instanceof Polyomino) {
@@ -237,6 +282,7 @@ public class Polyomino {
 	}
 
 	// a isometrie directe pres (rotations d'angle 0, pi/2, pi, 3pi/2)
+
 	public boolean equalsRotations(Polyomino P) {
 		Polyomino R0 = new Polyomino(rotation(P.tuiles, 0));
 		Polyomino R1 = new Polyomino(rotation(P.tuiles, 1));
@@ -247,6 +293,7 @@ public class Polyomino {
 
 	// a isometrie pres (rotations d'angle 0, pi/2, pi, 3pi/2 avec ou sans
 	// symetrie / x)
+
 	public boolean equalsIsometries(Polyomino P) {
 		Polyomino S = new Polyomino(symetrieX(P.tuiles));
 		Polyomino S0 = new Polyomino(rotation(S.tuiles, 0));
@@ -258,6 +305,7 @@ public class Polyomino {
 
 	// Verifie si le polyomino se trouve dans une liste (a translation
 	// pres)
+
 	public boolean estDans(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
 			if (this.equals(P))
@@ -267,6 +315,7 @@ public class Polyomino {
 	}
 
 	// Verifie si le polyomino se trouve dans une liste (a isometrie pres)
+
 	public boolean estDansIsometries(LinkedList<Polyomino> liste) {
 		for (Polyomino P : liste) {
 			if (this.equalsIsometries(P))
@@ -314,102 +363,7 @@ public class Polyomino {
 		return liste;
 	}
 
-	// Affichage console
-
-	@Override
-	public String toString() {
-		String s = "[";
-		for (int i = 0; i < this.largeur; i++) {
-			for (int j = 0; j < this.hauteur; j++) {
-				if (this.tuiles[i][j]) {
-					s += "(" + i + "," + j + ") ";
-				}
-			}
-		}
-		s += "]";
-		return s;
-	}
-
-	public static void afficherTuiles(boolean[][] tuiles) {
-		String s = "";
-		for (int j = tuiles[0].length - 1; j >= 0; j--) {
-			for (int i = 0; i < tuiles.length; i++) {
-				if (tuiles[i][j]) {
-					s += "1";
-				} else {
-					s += "0";
-				}
-			}
-			System.out.println(s);
-			s = "";
-		}
-	}
-
-	public void afficheConsole() {
-		afficherTuiles(this.tuiles);
-	}
-
-	// Affichage graphique
-
-	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin,
-			int ymaxTot) {
-		// Ajoute les carres du polyomino dans l'image img, plus precisement
-		for (int i = 0; i < tuiles.length; i++) {
-			for (int j = 0; j < tuiles[i].length; j++) {
-				if (tuiles[i][j]) {
-					int[] xcoords = { (xmin + i) * tailleTuiles, (xmin + i) * tailleTuiles,
-							(xmin + i + 1) * tailleTuiles, (xmin + i + 1) * tailleTuiles },
-							ycoords = { (ymaxTot - ymin - j) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
-									(ymaxTot - ymin - (j + 1)) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles };
-
-					/*
-					 * System.out.println("" + xcoords[0] / tailleTuiles + " " +
-					 * xcoords[1] / tailleTuiles + " " + xcoords[2] /
-					 * tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
-					 * ycoords[0] / tailleTuiles + " " + ycoords[1] /
-					 * tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
-					 * ycoords[3] / tailleTuiles);
-					 */
-
-					img.addPolygon(xcoords, ycoords, color);
-					if (i == 0 || !tuiles[i - 1][j]) {
-						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
-								(xmin + i) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
-					}
-					if (j == 0 || !tuiles[i][j - 1]) {
-						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
-								(xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles, width);
-					}
-					if (i == tuiles.length - 1 || !tuiles[i + 1][j]) {
-						img.addEdge((xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
-								(xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
-					}
-					if (j == tuiles[i].length - 1 || !tuiles[i][j + 1]) {
-						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
-								((xmin + i) + 1) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
-					}
-				}
-			}
-		}
-	}
-
-	public static void creerFenetre(Configuration config) {
-		Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue, Color.gray, Color.cyan, Color.magenta,
-				Color.orange, Color.lightGray };
-		Image2d img = new Image2d(config.xmax * config.tailleTuiles, config.ymax * config.tailleTuiles);
-		for (int i = 0; i < config.polyominoes.length; i++) {
-			Polyomino p = config.polyominoes[i];
-			int xmin = config.bottomLeft[i].x;
-			int ymin = config.bottomLeft[i].y;
-			p.addPolygonAndEdges(img, config.width, colors[i % colors.length], config.tailleTuiles, xmin, ymin,
-					config.ymax);
-		}
-
-		Image2dViewer fenetre = new Image2dViewer(img);
-		fenetre.setSize(config.tailleTuiles * config.xmax, config.tailleTuiles * config.ymax + 50);
-		fenetre.setLocationRelativeTo(null);
-
-	}
+	// Conversion vers et depuis exactCover
 
 	// translation pour exactCover : retourne le polyomino translate de i0,j0
 	// (attention son coin inferieur gauche n'est plus forcement en (0,0))
@@ -520,13 +474,9 @@ public class Polyomino {
 	public static Integer[][] toExactCover(boolean[][] region, LinkedList<Polyomino> polys) {
 		LinkedList<Integer[]> lines = new LinkedList<Integer[]>();
 		for (Polyomino P : polys) {
-			// System.out.println("Polyomino de base");
-			// P.afficheConsole();
-			// System.out.println("Polyominos translates");
 			for (int i0 = 0; i0 <= region.length - P.largeur; i0++) {
 				for (int j0 = 0; j0 <= region[0].length - P.hauteur; j0++) {
 					Polyomino P2 = P.translate(i0, j0);
-					// P2.afficheConsole();
 					Integer[] l = P2.toLine(region);
 					if (l.length > 0) {
 						lines.add(l);
@@ -534,7 +484,6 @@ public class Polyomino {
 				}
 			}
 		}
-
 		int p = lines.size(); // nombre de polyominos considérés dans le pavage
 		int c = Polyomino.nombreCases(region); // nombre de cases de la region
 		Integer[][] M = new Integer[p][c];
@@ -545,18 +494,135 @@ public class Polyomino {
 		}
 		return M;
 	}
-	
-	// retraduit une partition renvoyee par ExactCover en liste de Polyominos pour l'affichage
+
+	// retraduit une partition renvoyee par ExactCover en liste de Polyominos
+	// pour l'affichage
 
 	public static Polyomino[] fromExactCover(boolean[][] region, LinkedList<Integer[]> partition) {
 		LinkedList<Polyomino> polys = new LinkedList<Polyomino>();
 		Point[] cases = casesLine(region);
-		polys.add(new Polyomino(region));
+		// polys.add(new Polyomino(region));
 		for (Integer[] line : partition) {
 			Polyomino p = fromLine(region, line);
 			polys.add(p);
 		}
 		return polys.toArray(new Polyomino[polys.size()]);
+	}
+
+	// Affichage console
+
+	@Override
+	public String toString() {
+		String s = "[";
+		for (int i = 0; i < this.largeur; i++) {
+			for (int j = 0; j < this.hauteur; j++) {
+				if (this.tuiles[i][j]) {
+					s += "(" + i + "," + j + ") ";
+				}
+			}
+		}
+		s += "]";
+		return s;
+	}
+
+	public static void afficherTuiles(boolean[][] tuiles) {
+		String s = "";
+		for (int j = tuiles[0].length - 1; j >= 0; j--) {
+			for (int i = 0; i < tuiles.length; i++) {
+				if (tuiles[i][j]) {
+					s += "1";
+				} else {
+					s += "0";
+				}
+			}
+			System.out.println(s);
+			s = "";
+		}
+	}
+
+	public void afficheConsole() {
+		afficherTuiles(this.tuiles);
+	}
+
+	// Affichage graphique
+
+	public void addPolygonAndEdges(Image2d img, int width, Color color, int tailleTuiles, int xmin, int ymin,
+			int ymaxTot) {
+		// Ajoute les carres du polyomino dans l'image img, plus precisement
+		for (int i = 0; i < tuiles.length; i++) {
+			for (int j = 0; j < tuiles[i].length; j++) {
+				if (tuiles[i][j]) {
+					int[] xcoords = { (xmin + i) * tailleTuiles, (xmin + i) * tailleTuiles,
+							(xmin + i + 1) * tailleTuiles, (xmin + i + 1) * tailleTuiles },
+							ycoords = { (ymaxTot - ymin - j) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
+									(ymaxTot - ymin - (j + 1)) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles };
+
+					/*
+					 * System.out.println("" + xcoords[0] / tailleTuiles + " " +
+					 * xcoords[1] / tailleTuiles + " " + xcoords[2] /
+					 * tailleTuiles + " " + xcoords[3] / tailleTuiles + " / " +
+					 * ycoords[0] / tailleTuiles + " " + ycoords[1] /
+					 * tailleTuiles + " " + ycoords[2] / tailleTuiles + " " +
+					 * ycoords[3] / tailleTuiles);
+					 */
+
+					img.addPolygon(xcoords, ycoords, color);
+					if (i == 0 || !tuiles[i - 1][j]) {
+						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
+								(xmin + i) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
+					}
+					if (j == 0 || !tuiles[i][j - 1]) {
+						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
+								(xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles, width);
+					}
+					if (i == tuiles.length - 1 || !tuiles[i + 1][j]) {
+						img.addEdge((xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - j) * tailleTuiles,
+								(xmin + i + 1) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
+					}
+					if (j == tuiles[i].length - 1 || !tuiles[i][j + 1]) {
+						img.addEdge((xmin + i) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles,
+								((xmin + i) + 1) * tailleTuiles, (ymaxTot - ymin - (j + 1)) * tailleTuiles, width);
+					}
+				}
+			}
+		}
+	}
+
+	public static Color generateRandomColor(Color mix) {
+		Random random = new Random();
+		int red = random.nextInt(256);
+		int green = random.nextInt(256);
+		int blue = random.nextInt(256);
+
+		// mix the color
+		if (mix != null) {
+			red = (red + mix.getRed()) / 2;
+			green = (green + mix.getGreen()) / 2;
+			blue = (blue + mix.getBlue()) / 2;
+		}
+
+		Color color = new Color(red, green, blue);
+		return color;
+	}
+
+	public static void creerFenetre(Configuration config) {
+		Color[] colors = { Color.red, Color.yellow, Color.green, Color.blue, Color.gray, Color.cyan, Color.magenta,
+				Color.orange, Color.lightGray };
+		Image2d img = new Image2d(config.xmax * config.tailleTuiles, config.ymax * config.tailleTuiles);
+		for (int i = 0; i < config.polyominoes.length; i++) {
+			Polyomino p = config.polyominoes[i];
+			int xmin = config.bottomLeft[i].x;
+			int ymin = config.bottomLeft[i].y;
+			Color col = colors[i % colors.length];
+			// Color mix = new Color(100, 100, 150);
+			// Color col = generateRandomColor(mix);
+			p.addPolygonAndEdges(img, config.width, col, config.tailleTuiles, xmin, ymin, config.ymax);
+		}
+
+		Image2dViewer fenetre = new Image2dViewer(img);
+		fenetre.setSize(config.tailleTuiles * config.xmax, config.tailleTuiles * config.ymax + 50);
+		fenetre.setLocationRelativeTo(null);
+
 	}
 
 }

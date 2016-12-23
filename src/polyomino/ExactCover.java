@@ -28,29 +28,8 @@ public class ExactCover {
 		}
 	}
 	
-	public static int nbSetsContaining(int x, Integer[][] M, LinkedList<Integer> C){
-		int n = 0;
-		for (int S : C){
-			if (M[S][x] == 1){
-				n += 1;
-			}
-		}
-		return n;
-	}
+	// genere tous les exactCover sous forme d'une liste de partitions, chaque partitions étant une liste de tableaux d'entier, chaque tableau correspondant a une part et contenant des zeros et des uns
 	
-	public static int mostFrequent(Integer[][] M, LinkedList<Integer> X, LinkedList<Integer> C){
-		int m = 0;
-		int xTmp = 0;
-		for (int x : X){
-			int n = nbSetsContaining(x,M,C);
-			if (n > m){
-				xTmp = x;
-				m = n;
-			}
-		}
-		return xTmp;
-	}
-
 	@SuppressWarnings("unchecked")
 	public static LinkedList<LinkedList<Integer[]>> exactCover(Integer[][] M, LinkedList<Integer> X,
 			LinkedList<Integer> C) {
@@ -61,7 +40,6 @@ public class ExactCover {
 			return partitions;
 		}
 		int x = X.poll();
-		//int x = mostFrequent(M,C);
 		LinkedList<LinkedList<Integer[]>> partitions = new LinkedList<LinkedList<Integer[]>>();
 		for (int S : C) {
 			if (M[S][x] == 1) {
@@ -86,9 +64,11 @@ public class ExactCover {
 		return partitions;
 	}
 
+	// affiche toutes les partitions possibles
+	
 	public static void displayExactCover(Integer[][] M) {
 		System.out.println("On cherche les partitions de la matrice M :");
-		afficherMatrice(M);
+		//afficherMatrice(M);
 		int cardC = M.length;
 		int cardX = M[0].length;
 		LinkedList<Integer> X = new LinkedList<Integer>();
@@ -109,25 +89,8 @@ public class ExactCover {
 			}
 		}
 		System.out.println();
-		System.out.println("Il en a " + k + " au total.");
+		System.out.println("Il en a " + partitions.size() + " au total.");
 		System.out.println();
-	}
-	
-	public static LinkedList<Integer[]> findExactCover(Integer[][] M) {
-		int cardC = M.length;
-		int cardX = M[0].length;
-		LinkedList<Integer> X = new LinkedList<Integer>();
-		LinkedList<Integer> C = new LinkedList<Integer>();
-		for (int x = 0; x < cardX; x++) {
-			X.add(x);
-		}
-		for (int c = 0; c < cardC; c++) {
-			C.add(c);
-		}
-		LinkedList<LinkedList<Integer[]>> partitions = exactCover(M, X, C);
-		Random randomGenerator = new Random();
-		int k = randomGenerator.nextInt(partitions.size());
-		return partitions.get(k);
 	}
 
 	public static int pow(int x, int n) {
@@ -142,6 +105,8 @@ public class ExactCover {
 			}
 		}
 	}
+	
+	// renvoie la matrice binaire contenant tous les sous-ensembles de 1...n
 
 	public static Integer[][] subsets(int n) {
 		Integer[][] M = new Integer[pow(2, n)][n];
@@ -155,6 +120,31 @@ public class ExactCover {
 			}
 		}
 		return M;
+	}
+	
+	// renvoie la matrice binaire contenant tous les sous-ensembles de 1...n de card k
+	
+	public static Integer[][] subsets(int n, int k){
+		LinkedList<Integer[]> sets = new LinkedList<Integer[]>();
+		Integer[][] M = subsets(n);
+		for (Integer[] s : M){
+			int card = 0;
+			for (int x : s){
+				if (x==1){
+					card++;
+				}
+			}
+			if (card == k){
+				sets.add(s);
+			}
+		}
+		Integer[][] setsArray = new Integer[sets.size()][];
+		int i = 0;
+		for (Integer[] s : sets){
+			setsArray[i] = s;
+			i++;
+		}
+		return setsArray;
 	}
 
 }

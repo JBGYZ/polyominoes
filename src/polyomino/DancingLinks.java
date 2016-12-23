@@ -1,6 +1,7 @@
 package polyomino;
 
 import java.util.LinkedList;
+import java.util.Random;
 
 class Data {
 
@@ -47,6 +48,8 @@ class Data {
 		System.out.println("Gauche : " + this.L);
 	}
 
+	// retourne la liste des elements couverts par le subset auquel appartient l'objet Data this
+	
 	public LinkedList<Integer> toList() {
 		LinkedList<Integer> setList = new LinkedList<Integer>();
 		setList.add(this.C.N);
@@ -55,6 +58,8 @@ class Data {
 		}
 		return setList;
 	}
+	
+	// la meme chose en version matrice binaire
 
 	public Integer[] toArray(int cardX) {
 		LinkedList<Integer> setList = this.toList();
@@ -100,10 +105,6 @@ class Column extends Data {
 		return s;
 	}
 
-	public boolean checkSum() {
-		return this.sum() == this.S;
-	}
-
 	@Override
 	public String toString() {
 		String s = "colonne " + this.N + " de somme " + this.S;
@@ -133,6 +134,9 @@ class Column extends Data {
 public class DancingLinks {
 	public Column[] colonnes;
 	public Column H;
+
+	// genere une structure DancingLinks a partir d'une matrice de probleme
+	// ExactCover
 
 	public DancingLinks(Integer[][] M) {
 		int cardC = M.length;
@@ -236,29 +240,48 @@ public class DancingLinks {
 		x.L.R = x.R;
 		for (Data t = x.D; !(t == x); t = t.D) {
 			for (Data y = t.R; !(y == t); y = y.R) {
-				if (!(y.i == -1)) {
-					y.D.U = y.U;
-					y.U.D = y.D;
-					y.C.S--;
-				}
+				y.D.U = y.U;
+				y.U.D = y.D;
+				y.C.S--;
 			}
 		}
 	}
 
 	public static void uncoverColumn(Data x) {
-		x.R.L = x;
-		x.L.R = x;
 		for (Data t = x.U; !(t == x); t = t.U) {
 			for (Data y = t.L; !(y == t); y = y.L) {
-				if (!(y.i == -1)) {
-					y.D.U = y;
-					y.U.D = y;
-					y.C.S++;
-				}
+				y.D.U = y;
+				y.U.D = y;
+				y.C.S++;
 			}
 		}
+		x.R.L = x;
+		x.L.R = x;
 	}
 
+	// trouve l'element le moins souvent couvert
+
+	public static Data leastFrequent(Data H) {
+		int m = Integer.MAX_VALUE;
+		Data xTmp = null;
+		for (Data x = H.R; !(x == H); x = x.R) {
+			if (x.C.S < m) {
+				xTmp = x;
+				m = x.C.S;
+			}
+		}
+		if (m == Integer.MAX_VALUE) {
+			return H.R;
+		}
+		return xTmp;
+	}
+
+	// renvoie la solution a ExactCover sous la forme d'une liste de partitions,
+	// chaque partition contenant une liste d'objets Data, chaque objet Data
+	// etant situe sur la ligne d'un subset appartenant a la partition => pour
+	// retrouver le subset en question a partir de l'objet Data t, appliquer
+	// toList ou toArray
+	
 	public static LinkedList<LinkedList<Data>> exactCover(Data H) {
 		if (H.R == H) {
 			// aucun element, on renvoie un ensemble de partitions constitue
@@ -269,9 +292,11 @@ public class DancingLinks {
 			return partitions;
 		}
 		LinkedList<LinkedList<Data>> partitions = new LinkedList<LinkedList<Data>>();
-		Data x = H.L; // premier element a couvrir
+		Data x = leastFrequent(H); // premier element a couvrir
 		coverColumn(x.C);
-		for (Data t = x.U; !(t == x); t = t.U) { // t est sur la ligne du sous-ensemble par lequel on le couvre
+		for (Data t = x.U; !(t == x); t = t.U) { // t est sur la ligne du
+													// sous-ensemble par lequel
+													// on le couvre
 			for (Data y = t.L; !(y == t); y = y.L) {
 				coverColumn(y.C);
 			}
@@ -283,16 +308,17 @@ public class DancingLinks {
 				uncoverColumn(y.C);
 			}
 		}
+		uncoverColumn(x.C);
 		return partitions;
 	}
 
 	public static void displayExactCover(Integer[][] M) {
 		System.out.println("On cherche les partitions de la matrice M :");
-		ExactCover.afficherMatrice(M);
-		System.out.println();
+		// ExactCover.afficherMatrice(M);
 		int k = 0;
 		DancingLinks D = new DancingLinks(M);
 		LinkedList<LinkedList<Data>> partitions = exactCover(D.H);
+
 		for (LinkedList<Data> P : partitions) {
 			k += 1;
 			System.out.println("Partition numero " + k);
@@ -304,9 +330,26 @@ public class DancingLinks {
 				System.out.println(s);
 			}
 		}
+
 		System.out.println();
-		System.out.println("Il en a " + k + " au total.");
+		System.out.println("Il en a " + partitions.size() + " au total.");
 		System.out.println();
+	}
+	
+	// retourne une partition au hasard sous la forme d'une liste de parties, chaque partie etant un tableau de 1 et de 0
+
+	public static LinkedList<Integer[]> findExactCover(Integer[][] M) {
+		DancingLinks D = new DancingLinks(M);
+		LinkedList<LinkedList<Data>> partitions = exactCover(D.H);
+		System.out.println("Il a " + partitions.size() + " partitions de M au total.");
+		Random randomGenerator = new Random();
+		int k = randomGenerator.nextInt(partitions.size());
+		LinkedList<Data> P = partitions.get(k);
+		LinkedList<Integer[]> P2 = new LinkedList<Integer[]>();
+		for (Data t : P) {
+			P2.add(t.toArray(M[0].length));
+		}
+		return P2;
 	}
 
 }
