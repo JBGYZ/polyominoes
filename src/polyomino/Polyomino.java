@@ -221,10 +221,10 @@ public class Polyomino {
 	// renvoie la liste de tous les polyominos fixes obtenus a partir d'un
 	// polyomino libre (au maximum 8)
 
-	public static LinkedList<Polyomino> copains(Polyomino P) {
+	public LinkedList<Polyomino> copains() {
 		LinkedList<Polyomino> cop = new LinkedList<Polyomino>();
 		Polyomino Q;
-		boolean[][] t = P.tuiles;
+		boolean[][] t = this.tuiles;
 		boolean[][] t2 = symetrieX(t);
 		Q = new Polyomino(rotation(t, 0));
 		if (!(Q.estDans(cop))) {
@@ -495,6 +495,43 @@ public class Polyomino {
 		return M;
 	}
 
+	// la meme chose en utilisant exactement une fois chaque polyomino :
+	// necessite de partir d'une liste de polyominos libres
+	public static Integer[][] toExactCoverUnique(boolean[][] region, LinkedList<Polyomino> polys) {
+		LinkedList<Integer[]> lines = new LinkedList<Integer[]>();
+		for (int k = 0; k < polys.size(); k++) {
+			Polyomino P = polys.get(k);
+			for (Polyomino Q : P.copains()) {
+				for (int i0 = 0; i0 <= region.length; i0++) {
+					for (int j0 = 0; j0 <= region[0].length; j0++) {
+						Polyomino R = Q.translate(i0, j0);
+						if (R.includedIn(region)) {
+							Integer[] l = R.toLine(region);
+							Integer[] l2 = new Integer[polys.size() + l.length];
+							for (int i = 0; i < polys.size(); i++) {
+									l2[i] = 0;
+							}
+							l2[k] = 1;
+							for (int i = polys.size(); i < polys.size() + l.length; i++) {
+								l2[i] = l[i - polys.size()];
+							}
+							lines.add(l2);
+						}
+					}
+				}
+			}
+		}
+		int p = lines.size(); // nombre de polyominos considérés dans le pavage
+		int c = Polyomino.nombreCases(region); // nombre de cases de la region
+		Integer[][] M = new Integer[p][c];
+		int i = 0;
+		for (Integer[] line : lines) {
+			M[i] = line;
+			i++;
+		}
+		return M;
+	}
+
 	// retraduit une partition renvoyee par ExactCover en liste de Polyominos
 	// pour l'affichage
 
@@ -503,8 +540,26 @@ public class Polyomino {
 		Point[] cases = casesLine(region);
 		// polys.add(new Polyomino(region));
 		for (Integer[] line : partition) {
-			Polyomino p = fromLine(region, line);
-			polys.add(p);
+			Polyomino P = fromLine(region, line);
+			polys.add(P);
+		}
+		return polys.toArray(new Polyomino[polys.size()]);
+	}
+
+	// meme chose en unique
+
+	public static Polyomino[] fromExactCoverUnique(boolean[][] region, LinkedList<Integer[]> partition) {
+		LinkedList<Polyomino> polys = new LinkedList<Polyomino>();
+		Point[] cases = casesLine(region);
+		int nbCases = casesLine(region).length;
+		// polys.add(new Polyomino(region));
+		for (Integer[] l2 : partition) {
+			Integer[] l = new Integer[nbCases];
+			for (int i = 0; i < nbCases; i++) {
+				l[i] = l2[(l2.length-nbCases) + i];
+			}
+			Polyomino P = fromLine(region, l);
+			polys.add(P);
 		}
 		return polys.toArray(new Polyomino[polys.size()]);
 	}
@@ -620,7 +675,7 @@ public class Polyomino {
 		}
 
 		Image2dViewer fenetre = new Image2dViewer(img);
-		fenetre.setSize(config.tailleTuiles * config.xmax, config.tailleTuiles * config.ymax + 50);
+		fenetre.setSize(config.tailleTuiles * config.xmax, config.tailleTuiles * config.ymax + 23);
 		fenetre.setLocationRelativeTo(null);
 
 	}

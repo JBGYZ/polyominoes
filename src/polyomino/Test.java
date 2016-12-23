@@ -59,6 +59,7 @@ public class Test {
 		
 		// region rectangulaire de taille s, tous les polyominos d'une taille donnée
 
+		/*
 		int taille = 5;
 		LinkedList<Polyomino> matos = Polyomino.genererFixes(taille);
 		
@@ -69,6 +70,7 @@ public class Test {
 				region[i][j] = true;
 			}
 		}
+		*/
 		
 		// region custom, un seul type de polyominos
 		
@@ -76,6 +78,7 @@ public class Test {
 		boolean[][] tuiles = { { true, true } };
 		Polyomino base = new Polyomino(tuiles);
 		LinkedList<Polyomino> matos = Polyomino.copains(base);
+
 
 		int[][] diamond = { { 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 },
 				{ 0, 0, 1, 1, 1, 1, 1, 1, 0, 0 }, { 0, 1, 1, 1, 1, 1, 1, 1, 1, 0 }, { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
@@ -93,12 +96,51 @@ public class Test {
 		}
 		*/
 
+		/*
 		Integer[][] M3 = Polyomino.toExactCover(region, matos);
-		// DancingLinks.displayExactCover(M3);
+		DancingLinks.displayExactCover(M3);
 
 		LinkedList<Integer[]> partition = DancingLinks.findExactCover(M3);
 		Polyomino[] polys = Polyomino.fromExactCover(region, partition);
 		Polyomino.creerFenetre(new Configuration(polys, true));
+		*/
+		
+		// Test ExactCoverUnique
+		
+		LinkedList<Polyomino> matos = Polyomino.genererLibres(5);
+		
+		
+		boolean[][] region = new boolean[20][3];
+		for (int i = 0; i < region.length; i++) {
+			for (int j = 0; j < region[0].length; j++) {
+				region[i][j] = true;
+			}
+		}
+		
+		/*
+		int[][] diamond = { { 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 }, { 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 },
+				{ 0, 0, 1, 1, 1, 1, 1, 1, 0, 0 }, { 0, 1, 1, 1, 1, 1, 1, 1, 1, 0 }, { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 },
+				{ 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 }, { 0, 1, 1, 1, 1, 1, 1, 1, 1, 0 }, { 0, 0, 1, 1, 1, 1, 1, 1, 0, 0 },
+				{ 0, 0, 0, 1, 1, 1, 1, 0, 0, 0 }, { 0, 0, 0, 0, 1, 1, 0, 0, 0, 0 }, };
+		boolean[][] region = new boolean[10][10];
+		for (int i = 0; i < 10; i++) {
+			for (int j = 0; j < 10; j++) {
+				if (diamond[i][j] == 1) {
+					region[i][j] = true;
+				} else {
+					region[i][j] = false;
+				}
+			}
+		}
+		*/
+		
+		Integer[][] M3 = Polyomino.toExactCoverUnique(region, matos);
+		DancingLinks.displayExactCover(M3);
+		
+		LinkedList<Integer[]> partition = DancingLinks.findExactCover(M3);
+		Polyomino[] polys = Polyomino.fromExactCoverUnique(region, partition);
+		Polyomino.creerFenetre(new Configuration(polys, true));
+		
 
 	}
 
