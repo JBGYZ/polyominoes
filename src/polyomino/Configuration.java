@@ -42,7 +42,7 @@ public class Configuration {
 			this.xmax = x;
 		}
 		int tailleEcran = 13;
-		int facteur = 50;
+		int facteur = 100;
 		if (superposition) {
 			this.tailleTuiles = tailleEcran * facteur / (Math.max(this.xmax, this.ymax));
 		} else {

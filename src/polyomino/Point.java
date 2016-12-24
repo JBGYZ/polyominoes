@@ -31,12 +31,12 @@ public class Point {
 		return "(" + this.x + "," + this.y + ")";
 	}
 
-	public LinkedList<Point> voisins() {
-		LinkedList<Point> vois = new LinkedList<Point>();
-		vois.add(new Point(this.x + 1, this.y));
-		vois.add(new Point(this.x - 1, this.y));
-		vois.add(new Point(this.x, this.y + 1));
-		vois.add(new Point(this.x, this.y - 1));
-		return vois;
+	public LinkedList<Point> neighbors() {
+		LinkedList<Point> nei = new LinkedList<Point>();
+		nei.add(new Point(this.x + 1, this.y));
+		nei.add(new Point(this.x - 1, this.y));
+		nei.add(new Point(this.x, this.y + 1));
+		nei.add(new Point(this.x, this.y - 1));
+		return nei;
 	}
 }

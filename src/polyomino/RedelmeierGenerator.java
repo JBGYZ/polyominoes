@@ -41,7 +41,7 @@ public class RedelmeierGenerator {
 			if(p + 1 < n) {
 				// 4.a
 				LinkedList<Point> copieUntriedSet = cloneList(untriedSet);
-				for(Point voisin : P.voisins()) {
+				for(Point voisin : P.neighbors()) {
 					boolean estDansLaZone = (voisin.getx() > 0 && voisin.gety() >= 0)
 							|| (voisin.gety() > 0);
 					if(estDansLaZone

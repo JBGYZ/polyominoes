@@ -67,7 +67,7 @@ public class ExactCover {
 	// affiche toutes les partitions possibles
 	
 	public static void displayExactCover(Integer[][] M) {
-		System.out.println("On cherche les partitions de la matrice M :");
+		System.out.println("We look for all partitions of the matrix M (naive method) :");
 		//afficherMatrice(M);
 		int cardC = M.length;
 		int cardX = M[0].length;
@@ -79,8 +79,9 @@ public class ExactCover {
 		for (int c = 0; c < cardC; c++) {
 			C.add(c);
 		}
-		int k = 0;
 		LinkedList<LinkedList<Integer[]>> partitions = exactCover(M, X, C);
+		
+		int k = 0;
 		for (LinkedList<Integer[]> P : partitions) {
 			k += 1;
 			System.out.println("Partition numero " + k);
@@ -88,8 +89,8 @@ public class ExactCover {
 				afficherTableau(partie);
 			}
 		}
-		System.out.println();
-		System.out.println("Il en a " + partitions.size() + " au total.");
+		
+		System.out.println("There are " + partitions.size() + " partitions in total.");
 		System.out.println();
 	}
 

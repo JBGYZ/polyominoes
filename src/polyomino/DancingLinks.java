@@ -313,15 +313,14 @@ public class DancingLinks {
 	}
 
 	public static void displayExactCover(Integer[][] M) {
-		System.out.println("On cherche les partitions de la matrice M :");
-		ExactCover.afficherMatrice(M);
+		System.out.println("We look for all partitions of the matrix M (Dancing Links method) :");
+		// ExactCover.afficherMatrice(M);
 		int k = 0;
 		DancingLinks D = new DancingLinks(M);
 		LinkedList<LinkedList<Data>> partitions = exactCover(D.H);
-
+		
 		for (LinkedList<Data> P : partitions) {
 			k += 1;
-			System.out.println();
 			System.out.println("Partition numero " + k);
 			for (Data partie : P) {
 				String s = "";
@@ -331,9 +330,8 @@ public class DancingLinks {
 				System.out.println(s);
 			}
 		}
-
-		System.out.println();
-		System.out.println("Il en a " + partitions.size() + " au total.");
+		
+		System.out.println("There are " + partitions.size() + " partitions in total.");
 		System.out.println();
 	}
 	
