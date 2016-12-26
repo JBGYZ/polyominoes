@@ -39,4 +39,8 @@ public class Point {
 		nei.add(new Point(this.x, this.y - 1));
 		return nei;
 	}
+	
+	public boolean onBoard(int N){
+		return (this.x >= 0 && this.y >= 0 && this.x < N && this.y < N);
+	}
 }

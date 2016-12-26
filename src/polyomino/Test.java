@@ -211,6 +211,7 @@ public class Test {
 		System.out.println("Out of the " + polys830.size() + " free polyominoes of size " + n83 + ", only " + N83 + " can cover their own " + k83 + "-dilate.");
 		
 		*/
+		
 	}
 
 }
