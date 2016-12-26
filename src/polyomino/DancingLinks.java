@@ -19,36 +19,7 @@ class Data {
 		j = -1;
 	}
 
-	public Data(Data u, Data d, Data l, Data r, Column c, int i, int j) {
-		super();
-		U = u;
-		D = d;
-		L = l;
-		R = r;
-		C = c;
-		this.i = i;
-		this.j = j;
-	}
-
-	public boolean equalsData(Data x) {
-		return (this.i == x.i && this.j == x.j);
-	}
-
-	@Override
-	public String toString() {
-		String s = "donnee (" + this.i + "," + this.j + ")";
-		return s;
-	}
-
-	public void printNeighbors() {
-		System.out.println("La " + this.toString() + " a pour voisins :");
-		System.out.println("Haut : " + this.U);
-		System.out.println("Bas : " + this.D);
-		System.out.println("Droite : " + this.R);
-		System.out.println("Gauche : " + this.L);
-	}
-
-	// retourne la liste des elements couverts par le subset auquel appartient l'objet Data this
+	// Returns the list describing the elements covered by the subset to which the Data this belongs
 	
 	public LinkedList<Integer> toList() {
 		LinkedList<Integer> setList = new LinkedList<Integer>();
@@ -59,10 +30,14 @@ class Data {
 		return setList;
 	}
 	
-	// la meme chose en version matrice binaire
+	// Returns the binary array describing the elements covered by the subset to which the Data this belongs
 
 	public Integer[] toArray(int cardX) {
-		LinkedList<Integer> setList = this.toList();
+		LinkedList<Integer> setList = new LinkedList<Integer>();
+		setList.add(this.C.N);
+		for (Data t = this.R; !(t == this); t = t.R) {
+			setList.add(t.C.N);
+		}
 		Integer[] setArray = new Integer[cardX];
 		for (int i = 0; i < cardX; i++) {
 			setArray[i] = 0;
@@ -90,61 +65,21 @@ class Column extends Data {
 		S = 0;
 		N = -1;
 	}
-
-	public Column(Data u, Data d, Data l, Data r, Column c, int i, int j, int s, int n) {
-		super(u, d, l, r, c, i, j);
-		S = s;
-		N = n;
-	}
-
-	public int sum() {
-		int s = 0;
-		for (Data t = this.D; !(t == this); t = t.D) {
-			s++;
-		}
-		return s;
-	}
-
-	@Override
-	public String toString() {
-		String s = "colonne " + this.N + " de somme " + this.S;
-		return s;
-	}
-
-	public String columnContent() {
-		String s = "La " + this.toString() + " contient : ";
-		for (Data t = this.D; !(t == this); t = t.D) {
-			s += t.toString();
-		}
-		return s;
-	}
-
-	public boolean equalsColumn(Column x) {
-		Data y1 = this.D;
-		Data y2 = x.D;
-		while (y1.equalsData(y2) && !(y1.equalsData(this))) {
-			y1 = y1.D;
-			y2 = y2.D;
-		}
-		return (y1.equalsData(this));
-	}
-
 }
 
 public class DancingLinks {
-	public Column[] colonnes;
+
 	public Column H;
 
-	// genere une structure DancingLinks a partir d'une matrice de probleme
-	// ExactCover
+	// Generates a DancingLinks data structure from the matrix of an ExactCover problem
 
 	public DancingLinks(Integer[][] M) {
 		int cardC = M.length;
 		int cardX = M[0].length;
-		// on cree une matrice de donnees comprenant en premiere ligne les
-		// objets Column, puis un objet Data pour chaque coefficient de M, qu'il
-		// soit 0 ou 1
-		Data[][] donnees = new Data[cardC + 1][cardX];
+		// we create a data matrix containing :
+		// - in the first line, the column objects
+		// - in the following line one data object for each coefficient of M, zero or 1 alike
+		Data[][] dataMatrix = new Data[cardC + 1][cardX];
 		for (int j = 0; j < cardX; j++) {
 			Column c = new Column();
 			c.i = 0;
@@ -152,87 +87,58 @@ public class DancingLinks {
 			c.S = 0;
 			c.N = j;
 			c.C = c;
-			donnees[0][j] = c;
+			dataMatrix[0][j] = c;
 			for (int i = 1; i < cardC + 1; i++) {
 				Data d = new Data();
 				d.i = i;
 				d.j = j;
 				d.C = c;
-				donnees[i][j] = d;
+				dataMatrix[i][j] = d;
 			}
 		}
-		// on remplit tous les liens du quadrillage
+		// we fill out every single link in the grid (up, down, left and right for every data)
 		for (int j = 0; j < cardX; j++) {
 			for (int i = 0; i < cardC + 1; i++) {
-				Data d0 = donnees[i][j];
-				// à gauche
-				Data d1 = donnees[i][Math.floorMod(j - 1, cardX)];
+				Data d0 = dataMatrix[i][j];
+				// left
+				Data d1 = dataMatrix[i][Math.floorMod(j - 1, cardX)];
 				d0.L = d1;
 				d1.R = d0;
-				// à droite
-				Data d2 = donnees[i][Math.floorMod(j + 1, cardX)];
+				// right
+				Data d2 = dataMatrix[i][Math.floorMod(j + 1, cardX)];
 				d0.R = d2;
 				d2.L = d0;
-				// en haut
-				Data d3 = donnees[Math.floorMod(i - 1, cardC + 1)][j];
+				// up
+				Data d3 = dataMatrix[Math.floorMod(i - 1, cardC + 1)][j];
 				d0.U = d3;
 				d3.D = d0;
-				// en bas
-				Data d4 = donnees[Math.floorMod(i + 1, cardC + 1)][j];
+				// down
+				Data d4 = dataMatrix[Math.floorMod(i + 1, cardC + 1)][j];
 				d0.D = d4;
 				d4.U = d0;
 			}
 		}
-		// on supprime les objets Data correspondant a des coefficients nuls, et
-		// on remplit les compteurs S des colonnes en meme temps
+		// we delete the data corresponding to zero coefficients of M, and at the same time we update the column sums
 		for (int j = 0; j < cardX; j++) {
 			for (int i = 1; i < cardC + 1; i++) {
 				if (M[i - 1][j] == 1) {
-					Column c = (Column) donnees[0][j];
+					Column c = (Column) dataMatrix[0][j];
 					c.S++;
 				} else {
-					Data d = donnees[i][j];
+					Data d = dataMatrix[i][j];
 					d.U.D = d.D;
 					d.D.U = d.U;
 					d.R.L = d.L;
 					d.L.R = d.R;
 				}
-
 			}
 		}
-		this.colonnes = new Column[cardX];
-		for (int j = 0; j < cardX; j++) {
-			Column c = (Column) donnees[0][j];
-			this.colonnes[j] = c;
-		}
+		// we create the root
 		this.H = new Column();
-		this.H.R = this.colonnes[0];
-		this.H.L = this.colonnes[cardX - 1];
+		this.H.R = dataMatrix[0][0];
+		this.H.L = dataMatrix[0][cardX - 1];
 		this.H.L.R = this.H;
 		this.H.R.L = this.H;
-	}
-
-	public boolean equalsDL(DancingLinks d) {
-		Column x1 = (Column) this.H.R;
-		Column x2 = (Column) d.H.R;
-		while (x1.equalsColumn(x2) && !(x1.equalsData(this.H))) {
-			if (x1.R == this.H) {
-				return true;
-			}
-			x1 = (Column) x1.R;
-			x2 = (Column) x2.R;
-		}
-		return (x1.equalsData(this.H));
-	}
-
-	@Override
-	public String toString() {
-		String s = "Affichage de la structure DancingLinks : \n";
-		for (Data c = this.H.R; !(c == this.H); c = c.R) {
-			s += c.C.columnContent();
-			s += "\n";
-		}
-		return s;
 	}
 
 	public static void coverColumn(Data x) {
@@ -259,7 +165,7 @@ public class DancingLinks {
 		x.L.R = x;
 	}
 
-	// trouve l'element le moins souvent couvert
+	// Finds the least frequently covered element
 
 	public static Data leastFrequent(Data H) {
 		int m = Integer.MAX_VALUE;
@@ -276,31 +182,26 @@ public class DancingLinks {
 		return xTmp;
 	}
 
-	// renvoie la solution a ExactCover sous la forme d'une liste de partitions,
-	// chaque partition contenant une liste d'objets Data, chaque objet Data
-	// etant situe sur la ligne d'un subset appartenant a la partition => pour
-	// retrouver le subset en question a partir de l'objet Data t, appliquer
-	// toList ou toArray
+	// Returns the solution to the ExactCover problem as a list of partitions
+	// Every partition is represented as a list of data objets, each data object being located on the line of a subset that belons to the partition
+	// To get that subset, just apply toList or toArray to the data object
 	
-	public static LinkedList<LinkedList<Data>> exactCover(Data H) {
+	public static LinkedList<LinkedList<Data>> exactCoverData(Data H) {
 		if (H.R == H) {
-			// aucun element, on renvoie un ensemble de partitions constitue
-			// d'une partition vide P
+			// it means there is no element to cover, we just return an empty partition
 			LinkedList<LinkedList<Data>> partitions = new LinkedList<LinkedList<Data>>();
 			LinkedList<Data> P = new LinkedList<Data>();
 			partitions.add(P);
 			return partitions;
 		}
 		LinkedList<LinkedList<Data>> partitions = new LinkedList<LinkedList<Data>>();
-		Data x = leastFrequent(H); // premier element a couvrir
+		Data x = leastFrequent(H); // first element to cover
 		coverColumn(x.C);
-		for (Data t = x.U; !(t == x); t = t.U) { // t est sur la ligne du
-													// sous-ensemble par lequel
-													// on le couvre
+		for (Data t = x.U; !(t == x); t = t.U) {
 			for (Data y = t.L; !(y == t); y = y.L) {
 				coverColumn(y.C);
 			}
-			for (LinkedList<Data> P : exactCover(H)) {
+			for (LinkedList<Data> P : exactCoverData(H)) {
 				P.add(t);
 				partitions.add(P);
 			}
@@ -311,44 +212,38 @@ public class DancingLinks {
 		uncoverColumn(x.C);
 		return partitions;
 	}
-
-	public static void displayExactCover(Integer[][] M) {
-		System.out.println("We look for all partitions of the matrix M (Dancing Links method) :");
-		// ExactCover.afficherMatrice(M);
-		int k = 0;
+	
+	// Returns the solution to the ExactCover problem as a list of partitions, each partitions being a list of binary arrays
+	
+	public static LinkedList<LinkedList<Integer[]>> exactCover(Integer[][] M){
+		System.out.print("We search for the exact covers of M with the DancingLinks implementation of algorithm X : ");
+		int cardX = M[0].length;
 		DancingLinks D = new DancingLinks(M);
-		LinkedList<LinkedList<Data>> partitions = exactCover(D.H);
-		
-		for (LinkedList<Data> P : partitions) {
-			k += 1;
-			System.out.println("Partition numero " + k);
-			for (Data partie : P) {
-				String s = "";
-				for (int i : partie.toArray(M[0].length)) {
-					s += "" + i;
-				}
-				System.out.println(s);
+		LinkedList<LinkedList<Data>> partitionsData = exactCoverData(D.H);
+		LinkedList<LinkedList<Integer[]>> partitions = new LinkedList<LinkedList<Integer[]>>();
+		for (LinkedList<Data> Pdata : partitionsData){
+			LinkedList<Integer[]> P = new LinkedList<Integer[]>();
+			for (Data t : Pdata){
+				P.add(t.toArray(cardX));
 			}
+			partitions.add(P);
 		}
-		
-		System.out.println("There are " + partitions.size() + " partitions in total.");
-		System.out.println();
+		System.out.println("done");
+		System.out.println("There are " + partitions.size() + " partitions of M in total.");
+		return partitions;
 	}
 	
-	// retourne une partition au hasard sous la forme d'une liste de parties, chaque partie etant un tableau de 1 et de 0
+	// Returns a random partition, for graphic displaying
 
 	public static LinkedList<Integer[]> findExactCover(Integer[][] M) {
-		DancingLinks D = new DancingLinks(M);
-		LinkedList<LinkedList<Data>> partitions = exactCover(D.H);
-		System.out.println("Il a " + partitions.size() + " partitions de M au total.");
+		LinkedList<LinkedList<Integer[]>> partitions = exactCover(M);
+		if (partitions.size() == 0){
+			throw new Error("There is no partition");
+		}
 		Random randomGenerator = new Random();
 		int k = randomGenerator.nextInt(partitions.size());
-		LinkedList<Data> P = partitions.get(k);
-		LinkedList<Integer[]> P2 = new LinkedList<Integer[]>();
-		for (Data t : P) {
-			P2.add(t.toArray(M[0].length));
-		}
-		return P2;
+		LinkedList<Integer[]> P = partitions.get(k);
+		return P;
 	}
 
 }
