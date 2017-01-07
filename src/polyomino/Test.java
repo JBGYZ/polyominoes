@@ -34,14 +34,14 @@ public class Test {
 		Configuration config12 = new Configuration(polys12,false);
 		
 		Image2dViewer window12 = config12.createWindow();
-		imgName = "image12";
-		ext.ecrire(window12.imgComponent,
-				path + imgName + ".jpg");
+		// imgName = "image12";
+		// ext.ecrire(window12.imgComponent, path + imgName + ".jpg");
 		
 		*/
 		
 		// Task 2 : Polyomino generation
 
+		
 		/*
 		int n = 5;
 		
@@ -60,9 +60,8 @@ public class Test {
 		Configuration config22 = new Configuration(polys22Array, false);
 		
 		Image2dViewer window22 = config22.createWindow();
-		imgName = "image22";
-		ext.ecrire(window22.imgComponent,
-				path + imgName + ".jpg");
+		// imgName = "image22";
+		// ext.ecrire(window22.imgComponent, path + imgName + ".jpg");
 		
 		*/
 		 
@@ -123,7 +122,7 @@ public class Test {
 		// rectangular region sxs, all fixed polyominoes of size s
 		
 		/*
-		int s = 6;
+		int s = s;
 		LinkedList<Polyomino> polys81 = Polyomino.generateFixed(s);
 		boolean[][] region81 = new boolean[s][s];
 		for (int i = 0; i < region81.length; i++) {
@@ -136,14 +135,40 @@ public class Test {
 		Polyomino[] partition81polys = Polyomino.fromExactCover(region81, partition81);
 		Configuration config81 = new Configuration(partition81polys, true);
 		Image2dViewer window81 = config81.createWindow();
-		imgName = "image81"+s;
-		ext.ecrire(window81.imgComponent,
-				path + imgName + ".jpg");
+		// imgName = "image801"+s;
+		// ext.ecrire(window81.imgComponent,path + imgName + ".jpg");
 		*/
 
-		// triangle region of area 60, all 12 free polyominoes of size 5
-
+		// various regions of area 60, all 12 free polyominoes of size 5
+		
 		/*
+		
+		int[][] funnyShape = {
+				{1,1,0,0,0,0,0,0,0,0,0},
+				{1,1,1,1,0,0,0,0,0,0,0},
+				{1,1,1,1,1,1,0,0,0,0,0},
+				{1,1,1,1,1,1,1,1,0,0,0},
+				{1,1,1,1,1,1,1,1,1,1,0},
+				{0,1,1,1,1,1,1,1,1,1,1},
+				{0,0,0,1,1,1,1,1,1,1,1},
+				{0,0,0,0,0,1,1,1,1,1,1},
+				{0,0,0,0,0,0,0,1,1,1,1},
+				{0,0,0,0,0,0,0,0,0,1,1},
+		};
+		
+		int[][] diamond = {
+				{0,0,0,0,1,1,0,0,0,0},
+				{0,0,0,1,1,1,1,0,0,0},
+				{0,0,1,1,1,1,1,1,0,0},
+				{0,1,1,1,1,1,1,1,1,0},
+				{1,1,1,1,1,1,1,1,1,1},
+				{1,1,1,1,1,1,1,1,1,1},
+				{0,1,1,1,1,1,1,1,1,0},
+				{0,0,1,1,1,1,1,1,0,0},
+				{0,0,0,1,1,1,1,0,0,0},
+				{0,0,0,0,1,1,0,0,0,0},
+		};
+		
 		int[][] triangle = {
 				{0,0,0,0,1,1,0,0,0,0},
 				{0,0,0,0,1,1,0,0,0,0},
@@ -157,10 +182,13 @@ public class Test {
 				{1,1,1,1,1,1,1,1,1,1}
 		};
 				
-		boolean[][] region82 = new boolean[10][10];
+		// change the shape to switch the problem
+		int[][] shape = triangle;
+		
+		boolean[][] region82 = new boolean[shape[0].length][shape.length];
 		for (int i = 0; i < region82.length; i++) {
 			for (int j = 0; j < region82[0].length; j++) {
-				if (triangle[9-j][i] == 1) {
+				if (shape[j][region82.length - 1 - i] == 1) {
 					region82[i][j] = true;
 				} else {
 					region82[i][j] = false;
@@ -175,15 +203,15 @@ public class Test {
 		Polyomino[] partition82polys = Polyomino.fromExactCoverUnique(region82, partition82);
 		Configuration config82 = new Configuration(partition82polys, true);
 		Image2dViewer window82 = config82.createWindow();
-		imgName = "image82";
-		ext.ecrire(window82.imgComponent,
+		//imgName = "image82";
+		//ext.ecrire(window82.imgComponent,
 				path + imgName + ".jpg");
-				
 		*/
 		
 		// covering one's own dilate
 		
 		/*
+		
 		int n83 = 8;
 		int k83 = 4;
 		int N83 = 0;
@@ -203,15 +231,13 @@ public class Test {
 				polys83good.add(base83);
 			}
 		}
-		Configuration config83 = new Configuration(polys83good.toArray(new Polyomino[0]), false);
+		Configuration config83 = new Configuration(polys83good.toArray(new Polyomino[0]), 5);
 		Image2dViewer window83 = config83.createWindow();
-		imgName = "image83";
-		ext.ecrire(window83.imgComponent,
-				path + imgName + ".jpg");
+		// imgName = "image83";
+		// ext.ecrire(window83.imgComponent, path + imgName + ".jpg");
 		System.out.println("Out of the " + polys830.size() + " free polyominoes of size " + n83 + ", only " + N83 + " can cover their own " + k83 + "-dilate.");
 		
 		*/
-		
 	}
 
 }

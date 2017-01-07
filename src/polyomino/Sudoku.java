@@ -6,18 +6,110 @@ class Possibility {
 
 	int row, col, n;
 
-	public Possibility(int row, int col, int n){
+	public Possibility(int row, int col, int n) {
 		this.row = row;
 		this.col = col;
 		this.n = n;
 	}
-	
-	public String toString(){
+
+	public String toString() {
 		return "Put the number " + n + " in row " + row + " and column " + col;
 	}
 }
 
 public class Sudoku {
+
+	public static void displayGrid(Integer[][] M) {
+		for (int i = 0; i < 3; i++) {
+			String s = " ";
+			for (int j = 0; j < 3; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+				;
+			}
+			s += " ";
+			for (int j = 3; j < 6; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+				;
+			}
+			s += " ";
+			for (int j = 6; j < 9; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+				;
+			}
+			System.out.println(s);
+		}
+		System.out.println();
+		for (int i = 3; i < 6; i++) {
+			String s = " ";
+			for (int j = 0; j < 3; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+				;
+			}
+			s += " ";
+			for (int j = 3; j < 6; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+				;
+			}
+			s += " ";
+			for (int j = 6; j < 9; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+				;
+			}
+			System.out.println(s);
+		}
+		System.out.println();
+		for (int i = 6; i < 9; i++) {
+			String s = " ";
+			for (int j = 0; j < 3; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+			}
+			s += " ";
+			for (int j = 3; j < 6; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+			}
+			s += " ";
+			for (int j = 6; j < 9; j++) {
+				if (M[i][j] == 0) {
+					s += "-";
+				} else {
+					s += M[i][j];
+				}
+			}
+			System.out.println(s);
+		}
+	}
 
 	public static int box(int row, int col) {
 		// the boxes are numbered like this :
@@ -57,7 +149,8 @@ public class Sudoku {
 
 	public static void sudokuSolver(Integer[][] partial) {
 		System.out.println("Partial grid :");
-		ExactCover.displayMatrix(partial);
+		System.out.println("");
+		displayGrid(partial);
 		System.out.println();
 		boolean[] C = new boolean[4 * 9 * 9];
 		// inactive constraints
@@ -141,7 +234,7 @@ public class Sudoku {
 							}
 						}
 						ML.add(L);
-						P.add(new Possibility(row,col,n+1));
+						P.add(new Possibility(row, col, n + 1));
 					}
 				}
 			}
@@ -154,24 +247,25 @@ public class Sudoku {
 		LinkedList<Integer[]> partition = DancingLinks.findExactCover(M);
 		System.out.println();
 		System.out.println("Solution : ");
-		for (Integer[] line : partition){
-			for (int i = 0; i < M.length; i++){
+		for (Integer[] line : partition) {
+			for (int i = 0; i < M.length; i++) {
 				boolean eq = true;
-				for (int j = 0; j < line.length; j++){
-					if (line[j] != M[i][j]){
+				for (int j = 0; j < line.length; j++) {
+					if (line[j] != M[i][j]) {
 						eq = false;
 					}
 				}
-				if (eq){
+				if (eq) {
 					Possibility pos = P.get(i);
 					System.out.println(pos);
 					partial[pos.row][pos.col] = pos.n;
 				}
 			}
 		}
-	System.out.println();
-	System.out.println("Complete grid : ");
-	ExactCover.displayMatrix(partial);
+		System.out.println("");
+		System.out.println("Complete grid : ");
+		System.out.println("");
+		displayGrid(partial);
 	}
 
 	public static void main(String[] args) {
@@ -179,7 +273,7 @@ public class Sudoku {
 				{ 1, 0, 0, 0, 4, 0, 5, 6, 0 }, { 8, 0, 9, 0, 6, 0, 4, 2, 3 }, { 0, 2, 0, 8, 0, 3, 0, 9, 1 },
 				{ 7, 0, 0, 9, 0, 0, 8, 5, 0 }, { 0, 6, 0, 0, 3, 0, 0, 0, 4 }, { 2, 0, 7, 4, 0, 9, 0, 0, 5 },
 				{ 0, 0, 5, 0, 0, 6, 0, 7, 0 } };
-		
+
 		sudokuSolver(partial);
 	}
 

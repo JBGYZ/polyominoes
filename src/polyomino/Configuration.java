@@ -27,9 +27,31 @@ public class Configuration {
 		this.width = width;
 	}
 
-	// Creates a configuration from a list of polyominoes, allowing or not
-	// superposition
+	// Creates a configuration from a list of polyominoes with a fixed number of columns
 
+	public Configuration(Polyomino[] polyominoes, int nbCol) {
+		this.polyominoes = polyominoes;
+		int N = this.polyominoes.length;
+		int n = this.polyominoes[0].n;
+		this.bottomLeft = new Point[N];
+		for (int i = 0; i < N; i++) {
+			this.bottomLeft[i] = new Point();
+		}
+		for (int i = 0; i < N; i++) {
+			int row = (int)(i / nbCol);
+			int column = i % nbCol;
+			Polyomino p = this.polyominoes[i];
+			this.bottomLeft[i].x = column*(n);
+			this.bottomLeft[i].y = row*(n);
+		}
+		this.xmax = nbCol*(n);
+		this.ymax = (N/nbCol)*(n);
+		int screenSize = 13;
+		int factor = 50;
+		this.sizeTiles = screenSize * factor / (Math.max(this.xmax, this.ymax));
+		this.width = this.sizeTiles / 10;
+	}
+	
 	public Configuration(Polyomino[] polyominoes, boolean superposition) {
 		this.polyominoes = polyominoes;
 		int N = this.polyominoes.length;
@@ -63,6 +85,7 @@ public class Configuration {
 		this.width = this.sizeTiles / 10;
 	}
 
+
 	// Generates a random mixed color
 
 	public static Color generateRandomColor(Color mix) {
@@ -95,7 +118,7 @@ public class Configuration {
 			P.addPolygonAndEdges(img, this.width, col, this.sizeTiles, xmin, ymin, this.ymax);
 		}
 		Image2dViewer window = new Image2dViewer(img);
-		window.setSize(this.sizeTiles * this.xmax, this.sizeTiles * this.ymax + 23);
+		window.setSize(this.sizeTiles * this.xmax, this.sizeTiles * this.ymax + 25);
 		window.setLocationRelativeTo(null);
 		return window;
 	}
