@@ -1,4 +1,4 @@
-# Polyomino tilings & Exact cover
+﻿# Polyomino tilings & Exact cover
 ## INF421 Project
 
 The current repository is an Eclipse Java Project designed to find, create, manipulate and organize polyominos using various algorithms. The source code contains several classes, each fulfilling particular tasks.
@@ -16,19 +16,23 @@ The `Polyomino` class also allows you to generate all fixed and free polyomino f
 
 Eventually, the `Polyomino.importFile(String filePath)` static function creates a Polyomino table based on a text file.
 
-## The RedelmeierGenerator.java file
+## The RedelmeierGenerator class
 
-This file contains a `RedelmeierGenerator` class, including a static method `RedelmeierGenerator.generatefixed(int n)`, which returns the same result than `Polyomino.generateFixed(int n)`, but much faster. The enumeration can also be pushed further.
+This file RedelmeierGenerator.java contains a `RedelmeierGenerator` class, including a static method `RedelmeierGenerator.generatefixed(int n)`, which returns the same result than `Polyomino.generateFixed(int n)`, but much faster. The enumeration can also be pushed further.
 
 The file also contains a `TableauRelatif` class, used by the `RedelmeierGenerator` to represent a table using possibly negative integers.
 
 ## The ExactCover class
 
-This class is designed to solve the exact cover problem, using a static method ` ExactCover.exactCover(Integer[][] M)`. The entry is a matrix M such as M[i][j] = 1 if, and only if the i-th element contains the number j.
+This class is designed to solve the exact cover problem, using a static method ` ExactCover.exactCover(Integer[][] M)`. The entry is a matrix M such as M\[i][j] = 1 if, and only if the i-th element contains the number j.
 
 ## The DancingLinks class
 
 In this class, we implement Donald Knuth’s Dancing links algorithm, providing a much faster solution to the exact cover problem. The static method is the same: `DancingLinks. exactCover(Integer[][] M)`. The DancingLinks.java file contains a `Data` class and a `Column` class, used by the algorithm to build the `DancingLinks` data structure.
+
+## The Hexagonamino class
+
+Just like the `Polyomino` class, this class allows Hexagonamino counting and solving exact cover problems. The counting functions, constructor syntax and exact cover tiling function the same way.
 
 ## The Sudoku class
 

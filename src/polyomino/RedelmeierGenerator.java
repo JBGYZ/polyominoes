@@ -1,12 +1,16 @@
 package polyomino;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class RedelmeierGenerator {
 	
-	public static LinkedList<Polyomino> liste = new LinkedList<Polyomino>();
+	public static LinkedList<Polyomino> liste;
+	public static HashMap<Double, Polyomino> listeFree;
 	
-	public static LinkedList<Polyomino> genererFixe(int n) {
+	public static LinkedList<Polyomino> generateFixed(int n) {
+		liste = new LinkedList<Polyomino>();
 		TableauRelatif tab = new TableauRelatif(-n+1, n, 0, n);
 		LinkedList<Point> voisins = new LinkedList<Point>();
 		LinkedList<Point> vide = new LinkedList<Point>();
@@ -21,8 +25,37 @@ public class RedelmeierGenerator {
 		voisins.add(new Point(1,0));
 		tab.set(0, 0, true);
 		auxFixed(tab, vide, voisins, 1, n);
-		System.out.println("There are " + liste.size() + " fixed polyominoes of size " + n + ".");
+		System.out.println("[Redelmeier] There are " + liste.size() + " fixed polyominoes of size " + n + ".");
 		System.out.println();
+		return liste;
+	}
+	
+	public static LinkedList<Polyomino> generateFree(int n) {
+		TableauRelatif tab = new TableauRelatif(-n+1, n, 0, n);
+		LinkedList<Point> voisins = new LinkedList<Point>();
+		LinkedList<Point> vide = new LinkedList<Point>();
+		listeFree = new HashMap<Double, Polyomino>();
+		/*
+		 * 
+		 * 
+		 * ======X
+		 * =============
+		 * =============
+		 */
+		voisins.add(new Point(0,1));
+		voisins.add(new Point(1,0));
+		tab.set(0, 0, true);
+		auxFree(tab, vide, voisins, 1, n);
+		
+		Collection<Polyomino> col = listeFree.values();
+		liste = new LinkedList<Polyomino>();
+		for(Polyomino P : col) {
+			liste.add(P);
+		}
+		
+		System.out.println("[Redelmeier] There are " + liste.size() + " free polyominoes of size " + n + ".");
+		System.out.println();
+		
 		return liste;
 	}
 	
@@ -56,6 +89,51 @@ public class RedelmeierGenerator {
 				
 				// 4.b
 				auxFixed(tab, triedSet, copieUntriedSet, p+1, n);
+			}
+			
+			// 5
+			triedSet.add(P);
+			tab.set(P.getx(), P.gety(), false);
+		}
+		
+		while(triedSet.size() > tailleTriedSetInitial) triedSet.pollLast();
+		
+	}
+	
+	public static void auxFree(TableauRelatif tab, LinkedList<Point> triedSet, LinkedList<Point> untriedSet, int p, int n) {
+		int tailleTriedSetInitial = triedSet.size();
+		while(!untriedSet.isEmpty()) {
+			// 1
+			Point P = untriedSet.pop();
+			// 2
+			tab.set(P.getx(), P.gety(), true);
+			// 3
+			if (p + 1 == n){
+				Polyomino P1 = tab.getPolyomino();
+				double hashFree = P1.generateHashFree();
+				listeFree.put(hashFree, P1);
+				/*if (!P1.isInIsometries(liste)) {
+					liste.add(P1);
+				}*/
+			}
+			
+			// 4
+			if(p + 1 < n) {
+				// 4.a
+				LinkedList<Point> copieUntriedSet = cloneList(untriedSet);
+				for(Point voisin : P.neighbors()) {
+					boolean estDansLaZone = (voisin.getx() > 0 && voisin.gety() >= 0)
+							|| (voisin.gety() > 0);
+					if(estDansLaZone
+							&& !tab.get(voisin.getx(), voisin.gety())
+							&& !estDans(voisin, triedSet)
+							&& !estDans(voisin, untriedSet)) {
+						copieUntriedSet.add(voisin);
+					}
+				}
+				
+				// 4.b
+				auxFree(tab, triedSet, copieUntriedSet, p+1, n);
 			}
 			
 			// 5
@@ -153,6 +231,18 @@ class TableauRelatif {
 	
 	public Polyomino getPolyomino() {
 		int xm = 0, xM = 0, ym = 0, yM = 0;  // vraies limites du polyomino
+		
+		for(int i = 0; i < tab.length; i++) {
+			for(int j = 0; j < tab[i].length; j++) {
+				if(tab[i][j]) {
+					xm = i;
+					xM = i;
+					ym = j;
+					yM = j;
+					break;
+				}
+			}
+		}
 		
 		for(int i = 0; i < tab.length; i++) {
 			for(int j = 0; j < tab[i].length; j++) {

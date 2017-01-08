@@ -1,7 +1,6 @@
 package polyomino;
 
 import java.awt.Color;
-import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
@@ -13,7 +12,8 @@ public class Polyomino {
 	public int n; // area of the polyomino
 	public int width, height; // dimensions of the smallest rectangle containing
 								// the polyomino
-
+	public double hash, hashFree;
+	
 	// Returns the number of full squares in a matrix of booleans
 
 	public static int nbSquares(boolean[][] tiles) {
@@ -37,6 +37,7 @@ public class Polyomino {
 		this.n = nbSquares(this.tiles);
 		this.width = this.tiles.length;
 		this.height = this.tiles[0].length;
+		hashFree = Math.pow(2, width*height+1);
 	}
 
 	// Constructs a polyomino from a string of coordinates
@@ -100,6 +101,30 @@ public class Polyomino {
 			System.out.println(e.toString());
 		}
 		return polys.toArray(new Polyomino[0]);
+	}
+	
+	// Generates the hash of a Polyomino
+	
+	public double generateHash() {
+		hash = 0;
+		for(int i=0; i<tiles.length; i++) {
+			for(int j=0; j<tiles[0].length; j++) {
+				if (tiles[i][j]) {
+					hash+=Math.pow(2, j+i*(tiles[0].length+2));
+				}
+			}
+		}
+		return hash;
+	}
+	
+	public double generateHashFree() {
+		hashFree = generateHash();
+		LinkedList<Polyomino> friends = freeToFixed();
+		for(Polyomino P : friends) {
+			double hashTmp = P.generateHash();
+			hashFree = Math.min(hashFree, hashTmp);
+		}
+		return hashFree;
 	}
 
 	// Returns a boolean stating whether the polyomino contains a given point
@@ -380,14 +405,14 @@ public class Polyomino {
 
 	public static LinkedList<Polyomino> generateFixed(int n) {
 		LinkedList<Polyomino> polys = generate(n, false);
-		System.out.println("There are " + polys.size() + " fixed polyominoes of size " + n + ".");
+		System.out.println("[Naive method] There are " + polys.size() + " fixed polyominoes of size " + n + ".");
 		System.out.println();
 		return polys;
 	}
 
 	public static LinkedList<Polyomino> generateFree(int n) {
 		LinkedList<Polyomino> polys = generate(n, true);
-		System.out.println("There are " + polys.size() + " free polyominoes of size " + n + ".");
+		System.out.println("[Naive method] There are " + polys.size() + " free polyominoes of size " + n + ".");
 		System.out.println();
 		return polys;
 	}
@@ -607,7 +632,7 @@ public class Polyomino {
 
 	public static Polyomino[] fromExactCover(boolean[][] region, LinkedList<Integer[]> partition) {
 		LinkedList<Polyomino> polys = new LinkedList<Polyomino>();
-		Point[] cases = pointsLine(region);
+		// Point[] cases = pointsLine(region);
 		// polys.add(new Polyomino(region));
 		for (Integer[] line : partition) {
 			Polyomino P = fromLine(region, line);

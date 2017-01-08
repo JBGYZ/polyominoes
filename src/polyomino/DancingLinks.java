@@ -210,8 +210,18 @@ public class DancingLinks {
 			}
 		}
 		uncoverColumn(x.C);
+		/*
+		int s = 0;
+		for (LinkedList<Data> P : partitions){
+			s = Math.max(s, P.size());
+		}
+		if (s > 0 && (s%10==0)){
+			System.out.println("Taille maximum d'une partition : " + s);
+		}
+		*/
 		return partitions;
 	}
+	
 	
 	// Returns the solution to the ExactCover problem as a list of partitions, each partitions being a list of binary arrays
 	
@@ -245,5 +255,7 @@ public class DancingLinks {
 		LinkedList<Integer[]> P = partitions.get(k);
 		return P;
 	}
+	
+	
 
 }

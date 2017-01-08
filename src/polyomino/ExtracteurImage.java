@@ -11,16 +11,15 @@ import javax.swing.JComponent;
 public class ExtracteurImage {
 	
 	public void ecrire(JComponent pan, String chemin) {
-		File f = new File(chemin); //On ouvre le fichier image a creer
-		//On va faire dessiner Image2dComponent et enregistrer
-		//le r�sultat dans le BufferImage
+		File f = new File(chemin); 
+		// pan graphics are saved in the buffer
 		BufferedImage buffer = new BufferedImage(
 				pan.getPreferredSize().width,
 				pan.getPreferredSize().height,
 				BufferedImage.TYPE_3BYTE_BGR);
 		Graphics g = buffer.getGraphics();
 		pan.paint(g);
-		//On �crit le BufferImage dans le fichier image
+		// the buffer is saved in the image file
 		try {
 			ImageIO.write(buffer, "JPG", f);
 		} catch (IOException e) {
