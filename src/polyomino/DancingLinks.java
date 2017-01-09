@@ -226,7 +226,6 @@ public class DancingLinks {
 	// Returns the solution to the ExactCover problem as a list of partitions, each partitions being a list of binary arrays
 	
 	public static LinkedList<LinkedList<Integer[]>> exactCover(Integer[][] M){
-		System.out.print("We search for the exact covers of M with the DancingLinks implementation of algorithm X : ");
 		int cardX = M[0].length;
 		DancingLinks D = new DancingLinks(M);
 		LinkedList<LinkedList<Data>> partitionsData = exactCoverData(D.H);
@@ -238,8 +237,6 @@ public class DancingLinks {
 			}
 			partitions.add(P);
 		}
-		System.out.println("done");
-		System.out.println("There are " + partitions.size() + " partitions of M in total.");
 		return partitions;
 	}
 	

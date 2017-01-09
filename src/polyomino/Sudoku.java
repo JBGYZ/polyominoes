@@ -13,13 +13,14 @@ class Possibility {
 	}
 
 	public String toString() {
-		return "Put the number " + n + " in row " + row + " and column " + col;
+		return "Put the number " + n + " in row " + row + " and column " + col + "\n";
 	}
 }
 
 public class Sudoku {
 
-	public static void displayGrid(Integer[][] M) {
+	public static String displayGrid(Integer[][] M) {
+		String g = "";
 		for (int i = 0; i < 3; i++) {
 			String s = " ";
 			for (int j = 0; j < 3; j++) {
@@ -48,9 +49,9 @@ public class Sudoku {
 				}
 				;
 			}
-			System.out.println(s);
+			g += s + "\n";
 		}
-		System.out.println();
+		g += "\n";
 		for (int i = 3; i < 6; i++) {
 			String s = " ";
 			for (int j = 0; j < 3; j++) {
@@ -79,9 +80,9 @@ public class Sudoku {
 				}
 				;
 			}
-			System.out.println(s);
+			g += s + "\n";
 		}
-		System.out.println();
+		g += "\n";
 		for (int i = 6; i < 9; i++) {
 			String s = " ";
 			for (int j = 0; j < 3; j++) {
@@ -107,8 +108,9 @@ public class Sudoku {
 					s += M[i][j];
 				}
 			}
-			System.out.println(s);
+			g += s + "\n";
 		}
+		return g;
 	}
 
 	public static int box(int row, int col) {
@@ -147,11 +149,10 @@ public class Sudoku {
 		}
 	}
 
-	public static void sudokuSolver(Integer[][] partial) {
-		System.out.println("Partial grid :");
-		System.out.println("");
-		displayGrid(partial);
-		System.out.println();
+	public static String sudokuSolver(Integer[][] partial) {
+		String s = "";
+		s += "Partial grid :" + "\n" + "\n";
+		s += displayGrid(partial);
 		boolean[] C = new boolean[4 * 9 * 9];
 		// inactive constraints
 		for (int row = 0; row < 9; row++) {
@@ -245,8 +246,8 @@ public class Sudoku {
 			M[i] = L.toArray(new Integer[0]);
 		}
 		LinkedList<Integer[]> partition = DancingLinks.findExactCover(M);
-		System.out.println();
-		System.out.println("Solution : ");
+		s += "\n";
+		s += "Solution : " + "\n";
 		for (Integer[] line : partition) {
 			for (int i = 0; i < M.length; i++) {
 				boolean eq = true;
@@ -257,15 +258,16 @@ public class Sudoku {
 				}
 				if (eq) {
 					Possibility pos = P.get(i);
-					System.out.println(pos);
+					s += pos;
 					partial[pos.row][pos.col] = pos.n;
 				}
 			}
 		}
-		System.out.println("");
-		System.out.println("Complete grid : ");
-		System.out.println("");
-		displayGrid(partial);
+		s += "\n";
+		s += "Complete grid : " + "\n";
+		s += "\n";
+		s += displayGrid(partial);
+		return s;
 	}
 
 }

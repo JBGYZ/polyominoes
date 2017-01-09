@@ -25,8 +25,6 @@ public class RedelmeierGenerator {
 		voisins.add(new Point(1,0));
 		tab.set(0, 0, true);
 		auxFixed(tab, vide, voisins, 1, n);
-		System.out.println("[Redelmeier] There are " + liste.size() + " fixed polyominoes of size " + n + ".");
-		System.out.println();
 		return liste;
 	}
 	

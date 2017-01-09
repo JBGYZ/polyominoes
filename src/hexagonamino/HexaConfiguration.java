@@ -59,13 +59,13 @@ public class HexaConfiguration {
 			this.xmax = x;
 		}
 		int screenSize = 13;
-		int factor = 130;
+		int factor = 70;
 		if (superposition) {
 			this.sizeTiles = screenSize * factor / (Math.max(this.xmax, this.ymax));
 		} else {
 			this.sizeTiles = screenSize * factor / (Math.max(this.xmax, this.ymax));
 		}
-		this.width = this.sizeTiles / 10;
+		this.width = this.sizeTiles / 20;
 	}
 
 	// Generates a random mixed color

@@ -141,7 +141,6 @@ public class Polyomino {
 
 	public Polyomino addSquare(Point p) {
 		if (this.containsSquare(p)) {
-			System.out.println("This polyomino already contains " + p);
 			return this;
 		} else {
 			// a and b : useful if p has negative coordinates => we widen or
@@ -234,7 +233,6 @@ public class Polyomino {
 			}
 			return new Polyomino(newTiles);
 		} else {
-			System.out.println("Beware : n must be between 0 and 3.");
 			return null;
 		}
 	}
@@ -405,15 +403,11 @@ public class Polyomino {
 
 	public static LinkedList<Polyomino> generateFixed(int n) {
 		LinkedList<Polyomino> polys = generate(n, false);
-		System.out.println("[Naive method] There are " + polys.size() + " fixed polyominoes of size " + n + ".");
-		System.out.println();
 		return polys;
 	}
 
 	public static LinkedList<Polyomino> generateFree(int n) {
 		LinkedList<Polyomino> polys = generate(n, true);
-		System.out.println("[Naive method] There are " + polys.size() + " free polyominoes of size " + n + ".");
-		System.out.println();
 		return polys;
 	}
 
@@ -684,14 +678,13 @@ public class Polyomino {
 					s += "0";
 				}
 			}
-			System.out.println(s);
-			s = "";
+			s += "\n";
 		}
 		return s;
 	}
 
-	public void displayTiles() {
-		System.out.println(tilesToString(this.tiles));
+	public String displayTiles() {
+		return tilesToString(this.tiles);
 	}
 
 	// Adds every square of this into the image img

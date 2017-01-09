@@ -117,7 +117,7 @@ public class Configuration {
 			P.addPolygonAndEdges(img, this.width, col, this.sizeTiles, xmin, ymin, this.ymax);
 		}
 		Image2dViewer window = new Image2dViewer(img);
-		window.setSize(this.sizeTiles * this.xmax, this.sizeTiles * this.ymax + 35);
+		window.setSize(this.sizeTiles * this.xmax, this.sizeTiles * this.ymax + 50);
 		window.setLocationRelativeTo(null);
 		return window;
 	}

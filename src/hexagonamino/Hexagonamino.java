@@ -582,44 +582,5 @@ public class Hexagonamino {
 			}
 			return polys.toArray(new Hexagonamino[polys.size()]);
 		}
-
-	
-	public static void main(String[] args) {
-		/*boolean[][] tiles = {{true, false, false},
-							{true, true, false},
-							{false, false, false}},
-				tiles2 = {{false, true, true},
-						{false, false, true},
-						{true, true, true}};
-		
-		Hexagonamino[] hexTab = {new Hexagonamino(tiles), new Hexagonamino(tiles2)};
-		HexaConfiguration hexConf = new HexaConfiguration(hexTab, true);
-		hexConf.createWindow();*/
-		
-		/*for(int k=3; k<5; k++) {
-		LinkedList<Hexagonamino> hexalist = generateHexa(k, false);
-		HexaConfiguration hexConf2 = new HexaConfiguration(hexalist.toArray(new Hexagonamino[0]), false);
-		hexConf2.createWindow();
-		System.out.println(hexalist.size());
-		}*/
-		
-		int s = 6;
-		boolean isom = true;
-		LinkedList<Hexagonamino> polys81 = Hexagonamino.generateHexa(s, isom);
-		System.out.println(polys81.size());
-		boolean[][] region81 = new boolean[s][s];
-		for (int i = 0; i < region81.length; i++) {
-			for (int j = 0; j < region81[0].length; j++) {
-				region81[i][j] = true;
-			}
-		}
-		
-		Integer[][] M81 = Hexagonamino.toExactCover(region81, polys81, isom);
-		LinkedList<Integer[]> partition81 = DancingLinks.findExactCover(M81);
-		Hexagonamino[] partition81polys = Hexagonamino.fromExactCover(region81, partition81);
-		HexaConfiguration config81 = new HexaConfiguration(partition81polys, true);
-		Image2dViewer window81 = config81.createWindow();
-	
-	}
 }
 

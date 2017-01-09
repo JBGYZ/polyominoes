@@ -4,26 +4,26 @@ import java.util.LinkedList;
 
 public class ExactCover {
 
-	public static void displayArray(Integer[] a) {
+	public static String displayArray(Integer[] a) {
 		String s = "";
 		for (int i = 0; i < a.length; i++) {
 			s += a[i];
 		}
-		System.out.println(s);
+		return s;
 	}
 
-	public static void displayMatrix(Integer[][] m) {
+	public static String displayMatrix(Integer[][] m) {
+		String s = "";
 		for (int i = 0; i < m.length; i++) {
-			displayArray(m[i]);
+			s += displayArray(m[i]) + "\n";
 		}
+		return s;
 	}
 
 	// Returns the solution to the ExactCover problem as a list of partitions,
 	// each partitions being a list of binary arrays
 
 	public static LinkedList<LinkedList<Integer[]>> exactCover(Integer[][] M) {
-		System.out.print("We search for the exact covers of M with the naive implementation of algorithm X : ");
-		//displayMatrix(M);
 		int cardC = M.length;
 		int cardX = M[0].length;
 		LinkedList<Integer> X = new LinkedList<Integer>();
@@ -35,8 +35,6 @@ public class ExactCover {
 			C.add(c);
 		}
 		LinkedList<LinkedList<Integer[]>> partitions = exactCoverAux(M, X, C);
-		System.out.println("done");
-		System.out.println("There are " + partitions.size() + " partitions of M in total.");
 		return partitions;
 	}
 
@@ -78,15 +76,17 @@ public class ExactCover {
 
 	// Displays every partition found
 
-	public static void displayExactCover(LinkedList<LinkedList<Integer[]>> partitions) {
+	public static String displayExactCover(LinkedList<LinkedList<Integer[]>> partitions) {
+		String s = "There are " + partitions.size() + " partitions of the matrix M in total" + "\n" + "\n";
 		int k = 0;
 		for (LinkedList<Integer[]> P : partitions) {
 			k += 1;
-			System.out.println("Partition n° " + k);
+			s += "Partition n° " + k + "\n";
 			for (Integer[] part : P) {
-				displayArray(part);
+				s += displayArray(part) + "\n";
 			}
 		}
+		return s;
 	}
 
 	// Returns x^n
